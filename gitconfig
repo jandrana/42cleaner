@@ -1,0 +1,40 @@
+[core]
+	editor = vim
+	excludesfile = ~/.gitignore
+[credential]
+	helper = store
+[user]
+	name = Ana Alejandra Castillejo
+	email = yo@anaalejandra.com
+	username = jandrana
+	signingkey = /home/ana-cast/.ssh/github.pub
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = true
+[gpg "ssh"]
+	allowedSignersFile = /home/ana-cast/.config/git/allowed_signers
+[alias]
+	alias = ! git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
+	smartlog = log --graph --pretty=format:'commit: %C(bold red)%h%Creset %C(red)<%H>%Creset %C(bold magenta)%d %Creset%ndate: %C(bold yellow)%cd %Creset%C(yellow)%cr%Creset%nauthor: %C(bold blue)%an%Creset %C(blue)<%ae>%Creset%n%C(cyan)%s%n%Creset'
+	me = smartlog --author='Ana Alejandra Castillejo'
+	lstauth = shortlog -s -n
+	lol = log --oneline
+	uncommit = reset --soft HEAD^
+	rmal = config --global --unset
+	lolg = log --oneline --graph --decorate
+	chm = checkout main
+	chd = checkout develop
+[color]
+	ui = auto
+[color "branch"]
+	current = green bold
+	local = cyan
+	remote = yellow
+[color "diff"]
+	meta = yellow bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
+
