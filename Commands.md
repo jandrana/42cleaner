@@ -59,8 +59,9 @@ editor.rulers : [80]  // Add vertical ruler in VSC settings
 - <kbd>Ctrl</kbd> + <kbd>D</kbd>: Multi cursor selection by Search
 - <kbd>Alt</kbd> + <kbd>↑↓</kbd>: Move line up and down
 - <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>V</kbd>: Open Markdown Preview
-- <kbd>Ctrl</kbd> + <kbd>K</kbd> || <kbd>Esc</kbd> <kbd>Esc</kbd>: Zen Mode (Enter || Exit)
-- <kbd>Ctrl</kbd> + Shift</kbd> + <kbd>P</kbd>: Show command palette
+- <kbd>Ctrl</kbd> + <kbd>K</kbd>: Enter Zen Mode
+- <kbd>Esc</kbd> <kbd>Esc</kbd>: Exit Zen Mode 
+- <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>: Show command palette
 
 
 ## Git 
