@@ -38,4 +38,3 @@
 	old = red bold # Color for removed lines in diffs
 	new = green bold # Color for added lines in diffs
 	whitespace = red reverse # Color for whitespace errors in diffs
-
