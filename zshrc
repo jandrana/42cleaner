@@ -50,3 +50,8 @@ alias paco="$HOME"/francinette/tester.sh
 alias st_av='df -h $HOME'
 alias st_us='du -sh $(ls -A) -t 1M -c | sort -hr'
 
+# PYENV configurations
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+
