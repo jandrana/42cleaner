@@ -1,11 +1,23 @@
 #!/bin/bash
 
+# TODO
+# Add more directories and files to clean (for flag -a)
+# Add color variation depending on file size cleaned
+
 # Paths to clean
 PATHS_TO_CLEAN=(
 	"$HOME/.var/app/com.google.Chrome/cache/"
     "$HOME/francinette/"
     "$HOME/holas/" # does not exist test
 	# Add more directories and files to clean here
+    "$HOME/.cache"
+    "$HOME/.cache/google-chrome/Default/Cache"
+    "$HOME/.config/Code/Cache"
+    "$HOME/snap/slack/common/.cache"
+    "$HOME/snap/slack/149/.config/Slack/Cache"
+    "$HOME/snap/code/common/.cache"
+    "$HOME/snap/obsidian/common/.cache"
+    "$HOME/snap/gitkraken/common/.cache"
 )
 
 # Color and bold formats
