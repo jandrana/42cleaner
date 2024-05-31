@@ -113,53 +113,22 @@ print_storage_usage() {
 
 # Check if any of the processes are running
 check_running_process() {
-    declare -A running_processes
-    declare -A process_decision
-
-    for path in "${!ALL_PATHS_TO_CLEAN[@]}"; do
-        process="${ALL_PATHS_TO_CLEAN[$path]}"
-        if [ "$process" != "none" ] && pgrep -x "$process" > /dev/null; then
-            if [ -z "${running_processes[$process]}" ]; then
-                running_processes["$process"]="$path"
-            else
-                running_processes["$process"]+=";$path"
-            fi
-        fi
-    done
-
-    for process in "${!running_processes[@]}"; do
-        if [ -z "${process_decision[$process]}" ]; then
-            echo -e "\n${BOLD}${RED}Warning:${NORMAL} $process is running.\nIt is recommended to close this application before cleaning its cache.${NORMAL}"
-            echo -e "${BOLD}${YELLOW}SIZE\tPATH${NORMAL}"
-            IFS=';' read -ra paths <<< "${running_processes[$process]}"
-            for path in "${paths[@]}"; do
-                path_size=$(du -sb "$path" | awk '{print $1}')
-                echo -e "${YELLOW}$(numfmt --to=iec --suffix=B "$path_size")\t$path${NORMAL}"
-            done
-            while true; do
-                read -p "Do you want to proceed with cleaning cache for $process? (y/n) " yn
-                case $yn in
-                    [Yy]* ) process_decision["$process"]="yes"; break ;;
-                    [Nn]* ) process_decision["$process"]="no"; break ;;
-                    * ) echo "Please answer yes or no." ;;
-                esac
-            done
-        fi
-
-        if [ "${process_decision[$process]}" == "no" ]; then
-            IFS=';' read -ra paths <<< "${running_processes[$process]}"
-            for path in "${paths[@]}"; do
-                ALL_PATHS_TO_CLEAN["$path"]="skip"
-            done
-            echo -e "${RED}Skipping cleaning due to running process for:${NORMAL}"
-            for path in "${paths[@]}"; do
-                echo -e "\t$path"
-            done
-        fi
-    done
+    local path=$1
+    local process=$2
+    local path_size=$(du -sb "$path" | awk '{print $1}')
+    if [ "$process" != "none" ] && pgrep -x "$process" > /dev/null; then
+        echo -e "\n${BOLD}${RED}Warning:${NORMAL} $process is running.\nIt is recommended to close this application before cleaning its cache.${NORMAL}"
+        echo -e "${BOLD}${YELLOW}SIZE\tPATH${NORMAL}"
+        echo -e "${YELLOW}$(numfmt --to=iec --suffix=B "$path_size")\t$path${NORMAL}"
+        read -p "Do you want to proceed with cleaning cache for $process? (y/n) " yn
+        case $yn in
+            [Yy]* ) return 0 ;;
+            [Nn]* ) return 1 ;;
+            * ) echo "Please answer yes or no." ;;
+        esac
+    fi
     return 0
 }
-
 
 # Initialize variables
 total_freed=0
