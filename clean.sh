@@ -7,12 +7,12 @@
 
 # Paths to clean
 PATHS_TO_CLEAN=(
+    # General .cache directory
+    "$HOME/.cache"
 
     # Cache directory for Google Chrome
 	"$HOME/.var/app/com.google.Chrome/cache/"
     
-	# General .cache directory
-    "$HOME/.cache"
     #"$HOME/.cache/google-chrome/Default/Cache"
 
 
@@ -56,8 +56,8 @@ PATHS_TO_CLEAN=(
 )
 
 declare -A ALL_PATHS_TO_CLEAN=(
-    ["$HOME/.var/app/com.google.Chrome/cache/"]="google-chrome"
     ["$HOME/.cache"]="none"
+    ["$HOME/.var/app/com.google.Chrome/cache/"]="google-chrome"
     ["$HOME/.config/Code/Cache"]="code"
     ["$HOME/.config/Code/Shared Dictionary/cache"]="code"
     ["$HOME/.config/Code/WebStorage/5/CacheStorage"]="code"
@@ -88,6 +88,7 @@ WHITE=$(tput setaf 7)
 
 # Initialize variables
 total_freed=0
+total_skipped=0
 verbose=0
 dry_run=0
 interactive=0
@@ -142,28 +143,6 @@ print_help() {
     echo -e "\t -i \t Interactive mode: Ask for confirmation before deleting\n\t\t each file or directory"
     echo -e "\t -l \t List mode: ONLY List all directories and files to be\n\t\t cleaned without deleting"
     echo -e "\t -f \t Force mode: Delete cache without asking for confirmation\n\t\t of runnning processes"
-    echo -e "\t -s \t Safe mode: When force mode enabled it temporarily\n\t\t disables it and checks the running processes"
-    echo -e "\n\t Configuring default modes:"
-    echo -e "\t -D \t Set default mode of script to the provided mode\n\t\t (e.g. -s v to enable verbose mode by default)"
-    echo -e "\t -u \t Unset default mode of script for the provided mode\n\t\t (e.g. -u v to disable verbose mode by default)"
-    echo -e "\t -r \t Reset default modes of script to the original values"
-    echo -e "\t\t These configurations are available with the following options:"
-    echo -e "\t\t v: Verbose mode | n: Dry run mode | i: Interactive mode\n\t\t f: Force mode | l: List mode"
-    echo -e ""
-
-    echo -e "${BOLD}NAME${NORMAL}"
-    echo -e "\t $0 - clean cache and temporary files"
-    echo -e "${BOLD}DESCRIPTION${NORMAL}"
-    echo -e "\t Clean cache and temporary files for 42 students with Linux/Ubuntu"
-    echo -e "${BOLD}USAGE${NORMAL}"
-    echo -e "\t clean [options] // clean.sh [options]"
-    echo -e "${BOLD}OPTIONS${NORMAL}"
-    echo -e "\t -h \t Display this help message"
-    echo -e "\t -v \t Verbose mode: Show files deleted/to delete and their sizes"
-    echo -e "\t -n \t Dry run mode: Only show what would be deleted without\n\t\t actually deleting anything. Dry run also enables verbose mode"
-    echo -e "\t -i \t Interactive mode: Ask for confirmation before deleting\n\t\t each file or directory"
-    echo -e "\t -l \t List mode: ONLY List all directories and files to be\n\t\t cleaned without deleting"
-    echo -e "\t -f \t Force mode: Delete cache without asking for confirmation\n\t\t of running processes"
     echo -e "\t -s \t Safe mode: When force mode enabled it temporarily\n\t\t disables it and checks the running processes"
     echo -e "\n\t Configuring default modes:"
     echo -e "\t -D \t Set default mode of script to the provided mode\n\t\t (e.g. -D v to enable verbose mode by default)"
@@ -265,6 +244,10 @@ check_running_process() {
 
     echo -e "\n${YELLOW}${BOLD}Checking for running processes...${NORMAL}"
     for path in "${!ALL_PATHS_TO_CLEAN[@]}"; do
+        # skip paths that are already marked to be skipped
+        if [ "${ALL_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
+            continue
+        fi
         process="${ALL_PATHS_TO_CLEAN[$path]}"
         if [ "$process" != "none" ] && pgrep -x "$process" > /dev/null; then
             if [ -z "${running_processes[$process]}" ]; then
@@ -278,7 +261,7 @@ check_running_process() {
     for process in "${!running_processes[@]}"; do
         process_size=0
         if [ -z "${process_decision[$process]}" ]; then
-            echo -e "\n${BOLD}${RED}Warning:${NORMAL} $process is running.\nIt is recommended to close this application before cleaning its cache.${NORMAL}"
+            echo -e "\n${BOLD}${RED}Warning:${NORMAL}${BOLD} $process${NORMAL} is running.\nIt is recommended to close this application before cleaning its cache.${NORMAL}"
             echo -e "${BOLD}SIZE\tPROCESS PATHS${NORMAL}"
             IFS=';' read -ra paths <<< "${running_processes[$process]}"
             print_paths_sorted "${paths[@]}"
@@ -318,7 +301,7 @@ clean_paths() {
     if [ -e "$path" ]; then
         local path_size_before=$(get_path_size "$path")
         #if [ "$dry_run" -eq 0 ]; then
-        #    rm -rf "$path"
+            #rm -rf "$path"
         #fi
         total_freed=$((total_freed + path_size_before))
 
@@ -418,12 +401,15 @@ while getopts ":hvnilfsD:u:r" opt; do # FIX THIS
         n)
             echo -e "Dry run mode enabled"
             echo -e "Verbose mode enabled"
+            echo -e "\n\t\t${RED}${BOLD}WARNING:${NORMAL} THIS IS A SIMULATION MODE"
+            echo -e "\t\t\tNO FILES WILL BE DELETED"
             dry_run=1
             verbose=1
             ;;
         i)
             echo -e "Interactive mode enabled"
             interactive=1
+            verbose=1
             ;;
         l)
             echo -e "List only mode enabled"
@@ -452,6 +438,13 @@ if [ "$safe_mode" -eq 1 ]; then
     force=0
 fi
 
+# Skip cleaning of paths that are less than 1KB
+for path in "${PATHS_TO_CLEAN[@]}"; do
+    if [ $(get_path_size "$path") -lt $((1024)) ]; then
+        ALL_PATHS_TO_CLEAN["$path"]="skip"
+    fi
+done
+
 # Print the current storage available of home directory
 if [ "$list_only" -eq 0 ]; then
     before_cleaning=$(get_storage_usage)
@@ -461,7 +454,27 @@ if [ "$list_only" -eq 0 ]; then
     echo -e "\nSTARTING CLEANING PROCESS"
 else
     print_storage_usage
+    interactive=0
 fi
+
+for path in "${!ALL_PATHS_TO_CLEAN[@]}"; do
+    if [ "${ALL_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
+        continue
+    else
+        if [ "$interactive" -eq 1 ] && [ "$list_only" -eq 0 ]; then
+            while true; do
+                read -p "Do you want to delete: $path for $(print_size_color $(get_path_size "$path"))? (y/n) " yn
+                case $yn in
+                    [Yy]* ) final_paths_to_clean+=("$path"); break ;;
+                    [Nn]* ) ALL_PATHS_TO_CLEAN["$path"]="skip"; break;;
+                    * ) echo "Please answer yes or no." ;;
+                esac
+            done
+        else
+            final_paths_to_clean+=("$path")
+        fi
+    fi
+done
 
 # Print verbose output if enabled
 if [ "$verbose" -eq 1 ]; then
@@ -476,24 +489,34 @@ elif [ "$list_only" -eq 1 ]; then
     echo -e "\t${BOLD}${MAGENTA}PATHS TO CLEAN${NORMAL}"
 fi
 
-for path in "${!ALL_PATHS_TO_CLEAN[@]}"; do
-    if [ "${ALL_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
-        continue
-    else
-        final_paths_to_clean+=("$path")
-    fi
-done
-
 # Sort paths by size
 sorted_paths_list=($(sort_paths_by_size "${final_paths_to_clean[@]}"))
 
 for path in "${sorted_paths_list[@]}"; do
     if [ "$list_only" -eq 1 ]; then
-        echo -e "\t$path"
+        #echo -e "\t$path"
+        echo -e "\t$(print_size_color $(get_path_size $path))\t$path"
     else
         clean_paths "$path"
     fi
 done
+
+# List skipped paths in verbose mode
+sorted_all_paths=($(sort_paths_by_size "${!ALL_PATHS_TO_CLEAN[@]}"))
+if [ "$verbose" -eq 1 ]; then
+    if [ "$list_only" -eq 1 ]; then
+        echo -e "\n\t${BOLD}${MAGENTA}IGNORED PATHS FOR SIZE (< 1KB)${NORMAL}"
+    else
+        echo -e "\n\t${RED}${BOLD}SIZE\tSKIPPED${NORMAL}"
+    fi
+    for path in "${sorted_all_paths[@]}"; do
+        if [ "${ALL_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
+            total_skipped=$((total_skipped + $(get_path_size $path)))
+            echo -e "\t$(print_size_color $(get_path_size $path))\t$path"
+        fi
+    done
+    echo -e "\n\t$(get_size_color "$total_skipped")TOTAL SKIPPED: ${BOLD}$(print_size_color "$total_skipped")"
+fi
 
 # Convert total freed to readable format
 total_freed_read=$(print_size_color "$total_freed")
