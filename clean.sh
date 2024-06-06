@@ -1,61 +1,7 @@
 #!/bin/bash
 
-# TODO
-# Add interactive mode
-# Add option of all paths (extended version of paths to clean)
-# Check functionality of -D, -u, -r flags
-
-# Paths to clean
-PATHS_TO_CLEAN=(
-    # General .cache directory
-    "$HOME/.cache"
-
-    # Cache directory for Google Chrome
-	"$HOME/.var/app/com.google.Chrome/cache/"
-    
-    #"$HOME/.cache/google-chrome/Default/Cache"
-
-
-    ## .CONFIG CACHE ## 
-    # Cache directories for Visual Studio Code
-    "$HOME/.config/Code/Cache"
-    "$HOME/.config/Code/Shared Dictionary/cache"
-    "$HOME/.config/Code/WebStorage/5/CacheStorage"
-    "$HOME/.config/Code/CachedData"
-    
-    # Cache directories for GitKraken
-    "$HOME/.config/GitKraken/Cache"
-    "$HOME/.config/GitKraken/Shared Dictionary/cache"
-    
-    # Cache directories for Google Chrome
-    "$HOME/.config/google-chrome/Default/Shared Dictionary/cache"
-
-
-    ## SNAP CACHE ##
-    # Cache directories for Slack
-    "$HOME/snap/slack/common/.cache"
-    "$HOME/snap/slack/149/.config/Slack/Cache"
-    # Cache directories for Visual Studio Code
-    "$HOME/snap/code/common/.cache"
-
-    # Cache directories for Obsidian
-    "$HOME/snap/obsidian/common/.cache"
-
-    # Cache directories for GitKraken
-    "$HOME/snap/gitkraken/common/.cache"
-
-
-    ## OTHER ##
-    # Temporary files created by francinette when running tests (42)
-    "$HOME/francinette/temp"
-    # Trash directory
-    "$HOME/.local/share/Trash"
-
-    # Test directories
-    "$HOME/holas/"
-)
-
-declare -A ALL_PATHS_TO_CLEAN=(
+# List of default paths to clean along with their process name 
+declare -A DEF_PATHS_TO_CLEAN=(
     ["$HOME/.cache"]="none"
     ["$HOME/.var/app/com.google.Chrome/cache/"]="google-chrome"
     ["$HOME/.config/Code/Cache"]="code"
@@ -72,7 +18,7 @@ declare -A ALL_PATHS_TO_CLEAN=(
     ["$HOME/snap/gitkraken/common/.cache"]="gitkraken"
     ["$HOME/francinette/temp"]="none"
     ["$HOME/.local/share/Trash"]="none"
-    ["$HOME/holas/"]="none"
+    # Add more paths to clean here with the same format use "none" as process name if not needed
 )
 
 # Color and bold formats
@@ -96,7 +42,6 @@ list_only=0
 force=0
 safe_mode=0
 process_size=0
-custom_directory=""
 
 # Default configuration values
 DEFAULT_VERBOSE=0
@@ -106,7 +51,7 @@ DEFAULT_FORCE=0
 DEFAULT_LIST_ONLY=0
 
 # Load defaults from configuration file if it exists
-CONFIG_FILE="$HOME/.config/clean.conf" # ! CHANGE THIS
+CONFIG_FILE="$HOME/.config/clean.conf"
 if [ -f "$CONFIG_FILE" ]; then
     source "$CONFIG_FILE"
     verbose=$DEFAULT_VERBOSE
@@ -156,21 +101,22 @@ print_help() {
 
 get_size_color() {
     local size=$1
-    # for files smaller than 1MB
+    # files smaller than 1MB
     if [ "$size" -lt $((1024 * 1024)) ]; then
         echo "${BLUE}"
-    # for files smaller than 50MB
+    # files smaller than 50MB
     elif [ "$size" -lt $((50 * 1024 * 1024)) ]; then
         echo "${GREEN}"
-    # for files smaller than 100MB
+    # files smaller than 100MB
     elif [ "$size" -lt $((100 * 1024 * 1024)) ]; then
         echo "${RED}"
-    # for files bigger than 100MB
+    # files bigger than 100MB
     else
         echo "${MAGENTA}"
     fi
 }
 
+# Print given size in a readable format with color
 print_size_color() {
     local size=$1
     local size_color=$(get_size_color "$size")
@@ -187,7 +133,7 @@ print_storage_usage() {
     echo -e "\tAvailable space in $HOME: ${BOLD}$(get_storage_usage)${NORMAL}"
 }
 
-# Function to get the size of a path
+# Function to get the size of a given path
 get_path_size() {
     local path=$1
     if [ -e "$path" ]; then
@@ -197,7 +143,7 @@ get_path_size() {
     fi
 }
 
-# Function to sort an array of paths by their size from biggest to smallest
+# Function to sort and print an array of paths by their size from biggest to smallest
 print_paths_sorted() {
     local paths=("$@")
     declare -A path_sizes
@@ -218,7 +164,7 @@ print_paths_sorted() {
     done
 }
 
-# Function to sort an array of paths by their size from biggest to smallest
+# Function to return an array after sorting given array of paths by their size from biggest to smallest
 sort_paths_by_size() {
     local paths=("$@")
     declare -A path_sizes
@@ -243,12 +189,12 @@ check_running_process() {
     declare -A process_decision
 
     echo -e "\n${YELLOW}${BOLD}Checking for running processes...${NORMAL}"
-    for path in "${!ALL_PATHS_TO_CLEAN[@]}"; do
+    for path in "${!DEF_PATHS_TO_CLEAN[@]}"; do
         # skip paths that are already marked to be skipped
-        if [ "${ALL_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
+        if [ "${DEF_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
             continue
         fi
-        process="${ALL_PATHS_TO_CLEAN[$path]}"
+        process="${DEF_PATHS_TO_CLEAN[$path]}"
         if [ "$process" != "none" ] && pgrep -x "$process" > /dev/null; then
             if [ -z "${running_processes[$process]}" ]; then
                 running_processes["$process"]="$path"
@@ -285,7 +231,7 @@ check_running_process() {
         if [ "${process_decision[$process]}" == "no" ]; then
             IFS=';' read -ra paths <<< "${running_processes[$process]}"
             for path in "${paths[@]}"; do
-                ALL_PATHS_TO_CLEAN["$path"]="skip"
+                DEF_PATHS_TO_CLEAN["$path"]="skip"
             done
             echo -e "${RED}Skipping cleaning for paths with: $process process${NORMAL}"
         else
@@ -312,7 +258,7 @@ clean_paths() {
 }
 
 # Parse command/script flags
-while getopts ":hvnilfsD:u:r" opt; do # FIX THIS
+while getopts ":hvnilfsD:u:p:r" opt; do
     case ${opt} in
         D)
             # Check that -D flag is used exclusively to avoid conflicts
@@ -441,7 +387,7 @@ fi
 # Skip cleaning of paths that are less than 1KB
 for path in "${PATHS_TO_CLEAN[@]}"; do
     if [ $(get_path_size "$path") -lt $((1024)) ]; then
-        ALL_PATHS_TO_CLEAN["$path"]="skip"
+        DEF_PATHS_TO_CLEAN["$path"]="skip"
     fi
 done
 
@@ -453,12 +399,16 @@ if [ "$list_only" -eq 0 ]; then
     fi
     echo -e "\nSTARTING CLEANING PROCESS"
 else
-    print_storage_usage
     interactive=0
 fi
 
-for path in "${!ALL_PATHS_TO_CLEAN[@]}"; do
-    if [ "${ALL_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
+# Create an array of the final paths to clean (excluding the ones marked as "skip")
+# If interactive mode is enabled
+#  - Ask for confirmation before adding path to final_paths (want to delete?)
+#  - Yes: add path to the final paths to clean
+#  - No: mark path as "skip" in DEF_PATHS_TO_CLEAN
+for path in "${!DEF_PATHS_TO_CLEAN[@]}"; do
+    if [ "${DEF_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
         continue
     else
         if [ "$interactive" -eq 1 ] && [ "$list_only" -eq 0 ]; then
@@ -466,7 +416,7 @@ for path in "${!ALL_PATHS_TO_CLEAN[@]}"; do
                 read -p "Do you want to delete: $path for $(print_size_color $(get_path_size "$path"))? (y/n) " yn
                 case $yn in
                     [Yy]* ) final_paths_to_clean+=("$path"); break ;;
-                    [Nn]* ) ALL_PATHS_TO_CLEAN["$path"]="skip"; break;;
+                    [Nn]* ) DEF_PATHS_TO_CLEAN["$path"]="skip"; break;;
                     * ) echo "Please answer yes or no." ;;
                 esac
             done
@@ -476,7 +426,7 @@ for path in "${!ALL_PATHS_TO_CLEAN[@]}"; do
     fi
 done
 
-# Print verbose output if enabled
+# Print heading line before printing paths in verbose and list only mode
 if [ "$verbose" -eq 1 ]; then
     echo -e "\n${BOLD}${MAGENTA}VERBOSE:${NORMAL}"
     if [ "$dry_run" -eq 1 ]; then
@@ -489,20 +439,25 @@ elif [ "$list_only" -eq 1 ]; then
     echo -e "\t${BOLD}${MAGENTA}PATHS TO CLEAN${NORMAL}"
 fi
 
-# Sort paths by size
+# Sort final_paths by size
 sorted_paths_list=($(sort_paths_by_size "${final_paths_to_clean[@]}"))
 
+# Clean paths in sorted order or list in list_only mode
 for path in "${sorted_paths_list[@]}"; do
     if [ "$list_only" -eq 1 ]; then
-        #echo -e "\t$path"
         echo -e "\t$(print_size_color $(get_path_size $path))\t$path"
     else
         clean_paths "$path"
     fi
 done
 
-# List skipped paths in verbose mode
-sorted_all_paths=($(sort_paths_by_size "${!ALL_PATHS_TO_CLEAN[@]}"))
+# List skipped (not cleaned) paths in verbose mode + total size of skipped paths
+# Skipped paths are those that have been marked as "skip":
+# - User decision:
+#   - Paths that had a process running and user chose not to clean
+#   - Paths that user chose not to clean in interactive mode
+# - Paths that which size is less than 1KB
+sorted_all_paths=($(sort_paths_by_size "${!DEF_PATHS_TO_CLEAN[@]}"))
 if [ "$verbose" -eq 1 ]; then
     if [ "$list_only" -eq 1 ]; then
         echo -e "\n\t${BOLD}${MAGENTA}IGNORED PATHS FOR SIZE (< 1KB)${NORMAL}"
@@ -510,7 +465,7 @@ if [ "$verbose" -eq 1 ]; then
         echo -e "\n\t${RED}${BOLD}SIZE\tSKIPPED${NORMAL}"
     fi
     for path in "${sorted_all_paths[@]}"; do
-        if [ "${ALL_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
+        if [ "${DEF_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
             total_skipped=$((total_skipped + $(get_path_size $path)))
             echo -e "\t$(print_size_color $(get_path_size $path))\t$path"
         fi
@@ -521,12 +476,14 @@ fi
 # Convert total freed to readable format
 total_freed_read=$(print_size_color "$total_freed")
 
+# Print total freed space and home storage available before/after cleaning
 if [ "$list_only" -eq 0 ]; then
     echo -e "\t$(get_size_color "$total_freed")TOTAL CLEAN: ${BOLD}$total_freed_read\n"
     echo -ne "${RED}${BOLD}BEFORE: ${NORMAL}"
     echo -e "Available space in $HOME: ${BOLD}${before_cleaning}${NORMAL}"
     echo -ne "${GREEN}${BOLD}AFTER:${NORMAL}"
-    # Print the current storage available of home directory
     print_storage_usage
+else
+    echo -e "\n $(print_storage_usage)"
 fi
 echo -e "${NORMAL}"
