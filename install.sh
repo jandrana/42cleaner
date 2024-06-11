@@ -18,10 +18,11 @@ chmod +x uninstall.sh
 # Copy the clean.sh script to the $HOME directory
 cp clean.sh $HOME
 
-# Check if the configuration file exists in the current directory, if so, copy it to $HOME/.config
-if [ -f "clean.conf" ]; then
+# Check if the configuration file exists in the utils directory, if so, copy it to $HOME/.config
+if 
+if [ -f "utils/clean.conf" ]; then
 	mkdir -p $HOME/.config
-	cp clean.conf $HOME/.config
+	cp utils/clean.conf $HOME/.config
 fi
 
 # Add an alias 'clean' to the shell configuration
