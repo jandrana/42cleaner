@@ -1,9 +1,5 @@
 # Script documentation for clean.sh
 
-## Overview
-
-The `clean.sh` script is designed to clean cache and temporary files for 42 students using Linux/Ubuntu. It helps to free up disk space and maintain system performance by removing unnecessary files from various directories. The script supports various modes including verbose, dry run, interactive, force, and safe modes.
-
 ## Index
 
 - [Overview](#overview)
@@ -19,6 +15,10 @@ The `clean.sh` script is designed to clean cache and temporary files for 42 stud
   - [How to Determine the Process Name of a Path](#how-to-determine-the-process-name-of-a-path)
   - [Using the Process Name in `DEF_PATHS_TO_CLEAN`](#using-the-process-name-in-def_paths_to_clean)
 - [Conclusion](#conclusion)
+
+## Overview
+
+The `clean.sh` script is designed to clean cache and temporary files for 42 students using Linux/Ubuntu. It helps to free up disk space and maintain system performance by removing unnecessary files from various directories. The script supports various modes including verbose, dry run, interactive, force, and safe modes.
 
 ## Features
 
@@ -93,8 +93,6 @@ This command will temporarily disable force mode and check for running processes
 
 ### Functions
 
-#### Table Format
-
 | Function Name          | Description                                                |
 |------------------------|------------------------------------------------------------|
 | `update_config_file`   | Updates the configuration file with new default values.    |
@@ -150,5 +148,7 @@ declare -A DEF_PATHS_TO_CLEAN=(
   # Add more paths here
 )
 ```
+
+## Conclusion
 
 By identifying the processes that are actively using specific directories, you can accurately configure `clean.sh` to manage cache and temporary files for a wider range of applications.
