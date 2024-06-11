@@ -9,6 +9,12 @@ fi
 # Give execution permissions to clean.sh
 chmod +x clean.sh
 
+# Give execution permissions to the process_name.sh script
+chmod +x utils/process_name.sh
+
+# Give execution permissions to the uninstall.sh script
+chmod +x uninstall.sh
+
 # Copy the clean.sh script to the $HOME directory
 cp clean.sh $HOME
 
