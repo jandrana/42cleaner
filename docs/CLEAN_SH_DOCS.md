@@ -135,7 +135,7 @@ You can add custom paths to the `DEF_PATHS_TO_CLEAN` array in the `clean.sh` scr
 
 To find the process name associated with a specific path, you can use the `process_name.sh` script included in this project. This script helps identify which processes are accessing files within a specified directory.
 
-For detailed instructions on how to use the `process_name.sh` script, please refer to the [PROCESS_NAME_DETAILS.md](PROCESS_NAME_DETAILS.md) documentation.
+For detailed instructions on how to use the `process_name.sh` script, please refer to the [PROCESS_NAME_DOCS.md](PROCESS_NAME_DOCS.md) documentation.
 
 #### Using the Process Name in `DEF_PATHS_TO_CLEAN`
 
