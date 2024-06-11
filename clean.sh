@@ -3,14 +3,14 @@
 # List of default paths to clean along with their process name 
 declare -A DEF_PATHS_TO_CLEAN=(
     ["$HOME/.cache"]="none"
-    ["$HOME/.var/app/com.google.Chrome/cache/"]="google-chrome"
+    ["$HOME/.var/app/com.google.Chrome/cache/"]="chrome"
     ["$HOME/.config/Code/Cache"]="code"
     ["$HOME/.config/Code/Shared Dictionary/cache"]="code"
     ["$HOME/.config/Code/WebStorage/5/CacheStorage"]="code"
     ["$HOME/.config/Code/CachedData"]="code"
     ["$HOME/.config/GitKraken/Cache"]="gitkraken"
     ["$HOME/.config/GitKraken/Shared Dictionary/cache"]="gitkraken"
-    ["$HOME/.config/google-chrome/Default/Shared Dictionary/cache"]="google-chrome"
+    ["$HOME/.config/google-chrome/Default/Shared Dictionary/cache"]="chrome"
     ["$HOME/snap/slack/common/.cache"]="slack"
     ["$HOME/snap/slack/149/.config/Slack/Cache"]="slack"
     ["$HOME/snap/code/common/.cache"]="code"
