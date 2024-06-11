@@ -15,7 +15,7 @@
 
 The `clean.conf` file contains default configuration values for various options used by the `clean.sh` script. These options control the behavior of the script, including verbosity, dry run, interactive mode, force mode, and list only mode. Each option is assigned a default value of `0`, indicating that it is disabled by default.
 
-## Important Note
+## Important Note❗
 
 The `clean.conf` file located in the repository is not the one that needs to be changed. The configuration file that is actually being processed by the `clean.sh` script is the copy made by the installer in the `$HOME/.config` directory. You can change the file location by modifying the line `CONFIG_FILE="$HOME/.config/clean.conf"` in the `clean.sh` script and by moving the `$HOME/.config/clean.conf` file or by copying the `clean.conf` file from the repository into the new location.
 

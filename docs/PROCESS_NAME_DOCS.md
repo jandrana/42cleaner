@@ -6,11 +6,10 @@
 - [Usage](#usage)
   - [Command-line Arguments](#command-line-arguments)
   - [Examples](#examples)
-  - [Script](#script)
+  - [Importance of Application State](#importance-of-application-state)
 - [Path Selection for Better Results](#path-selection-for-better-results)
   - [Good Paths vs. Bad Paths](#good-paths-vs-bad-paths)
   - [Extensive List of Directory Paths](#extensive-list-of-directory-paths)
-  - [Importance of Application State](#importance-of-application-state)
 - [Detailed Script Explanation](#detailed-script-explanation)
 - [Conclusion](#conclusion)
 
@@ -42,32 +41,10 @@ Go to the script location folder (42cleaner/utils by default).
 - To specify a custom directory directly using the command:
   `./process_name.sh /path/to/custom/directory`
 
-### Script
+### Importance of Application State
 
-The script should look like this:
-
-```sh
-#!/bin/bash
-
-# Default directory path
-directory="$HOME/.config/Code/Cache"
-
-# Check if a path is passed as an argument
-if [ $# -gt 0 ]; then
-    directory="$1"
-fi
-
-# Iterate over all PIDs in /proc
-for pid in $(ls /proc | grep -E '^[0-9]+$'); do
-    # Check if any file descriptor of the process points to the specified directory
-    if ls /proc/$pid/fd 2>/dev/null | xargs -I {} readlink -f /proc/$pid/fd/{} 2>/dev/null | grep -q "$directory"; then
-        # Get the command name of the process
-        cmd=$(ps -p $pid -o comm=)
-        # Print the PID and command name
-        echo "$pid $cmd"
-    fi
-done
-```
+- **Running applications:**
+  - To successfully identify an specific process name, the application which process name you want to know, **must be running**. If the application is closed, the script is unlikely to find any processes accessing the specified directory.
 
 ## Path Selection for Better Results
 
@@ -153,10 +130,6 @@ To improve the chances of successfully identifying process names for application
 - **FileZilla**:
   - .var/app: `$HOME/.var/app/org.filezillaproject.Filezilla/`
 
-### Importance of Application State
-
-- **Running applications:**
-  - To successfully identify the process name, the application must be running. If the application is closed, the script is unlikely to find any processes accessing the specified directory.
 
 ## Detailed Script Explanation
 
