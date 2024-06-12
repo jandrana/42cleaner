@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Author: Ana Alejandra Castillejo
+# Description: Script to clean cache and temporary files for 42 students with Linux/Ubuntu
+# Last Update: 11/06/2024
+
 # List of default paths to clean along with their process name 
 declare -A DEF_PATHS_TO_CLEAN=(
     ["$HOME/.cache"]="none"
@@ -21,17 +25,6 @@ declare -A DEF_PATHS_TO_CLEAN=(
     # Add more paths to clean here with the same format use "none" as process name if not needed
 )
 
-# Color and bold formats
-BOLD=$(tput bold)
-NORMAL=$(tput sgr0)
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-YELLOW=$(tput setaf 3)
-BLUE=$(tput setaf 4)
-MAGENTA=$(tput setaf 5)
-CYAN=$(tput setaf 6)
-WHITE=$(tput setaf 7)
-
 # Initialize variables
 total_freed=0
 total_skipped=0
@@ -49,21 +42,9 @@ DEFAULT_DRY_RUN=0
 DEFAULT_INTERACTIVE=0
 DEFAULT_FORCE=0
 DEFAULT_LIST_ONLY=0
+DEFAULT_COLORS=true
 
-# Load defaults from configuration file if it exists
-CONFIG_FILE="$HOME/.config/clean.conf"
-if [ -f "$CONFIG_FILE" ]; then
-    source "$CONFIG_FILE"
-    verbose=$DEFAULT_VERBOSE
-    dry_run=$DEFAULT_DRY_RUN
-    interactive=$DEFAULT_INTERACTIVE
-    force=$DEFAULT_FORCE
-    list_only=$DEFAULT_LIST_ONLY
-fi
-
-
-### FUNCTIONS ###
-
+### CONFIGURATION FILE ###
 # Update configuration file with new default values
 update_config_file() {
     echo "DEFAULT_VERBOSE=$DEFAULT_VERBOSE" > "$CONFIG_FILE"
@@ -71,31 +52,154 @@ update_config_file() {
     echo "DEFAULT_INTERACTIVE=$DEFAULT_INTERACTIVE" >> "$CONFIG_FILE"
     echo "DEFAULT_FORCE=$DEFAULT_FORCE" >> "$CONFIG_FILE"
     echo "DEFAULT_LIST_ONLY=$DEFAULT_LIST_ONLY" >> "$CONFIG_FILE"
+    echo "DEFAULT_COLORS=$colors" >> "$CONFIG_FILE"
 }
+
+# Load defaults from configuration file if it exists or create it with default values
+CONFIG_FILE="$HOME/.config/clean.conf"
+CONFIG_DIR=$(dirname "$CONFIG_FILE")
+if [ ! -d "$CONFIG_DIR" ]; then
+    mkdir -p "$CONFIG_DIR"
+fi
+if [ -f "$CONFIG_FILE" ]; then
+    source "$CONFIG_FILE"
+    verbose=$DEFAULT_VERBOSE
+    dry_run=$DEFAULT_DRY_RUN
+    interactive=$DEFAULT_INTERACTIVE
+    force=$DEFAULT_FORCE
+    list_only=$DEFAULT_LIST_ONLY
+    colors=$DEFAULT_COLORS
+else
+    colors=true
+    touch "$CONFIG_FILE"
+    update_config_file
+fi
+
+### FUNCTIONS ###
+
+# Update Script
+update_script() {
+    local repo_dir=$(find $HOME -type d -name '42cleaner' -print -quit)
+
+    if [ -z "$repo_dir" ]; then
+        echo -e "${RED}Repository directory not found in $HOME.${NORMAL}"
+        echo -e "Please make sure the repository is cloned and called '42cleaner'."
+        exit 1
+    fi
+
+    # Navigate to the repository directory
+    cd "$repo_dir" || exit
+
+    # Fetch the latest changes from the remote repository (to check if the script is up-to-date)
+    git fetch
+
+    # Compare the local and remote hashes and act accordingly
+    local local_hash=$(git rev-parse HEAD)
+    local remote_hash=$(git rev-parse @{u})
+    if [ "$local_hash" == "$remote_hash" ]; then
+        echo -e "${GREEN}The script is already up-to-date.${NORMAL}"
+    else
+        # Pull the latest changes
+        git pull origin main
+
+        # Copy the updated script to $HOME
+        cp clean.sh $HOME/clean.sh
+        echo -e "${GREEN}Script updated successfully from the repository.${NORMAL}"
+    fi
+    exit 0
+}
+
+# Update color variables value depending on user configuration
+update_color_variables() {
+    if [ "$colors" == "true" ] || [ "$colors" == "1" ] ; then
+        BOLD=$(tput bold)
+        NORMAL=$(tput sgr0)
+        RED=$(tput setaf 1)
+        GREEN=$(tput setaf 2)
+        YELLOW=$(tput setaf 3)
+        BLUE=$(tput setaf 4)
+        MAGENTA=$(tput setaf 5)
+        CYAN=$(tput setaf 6)
+        WHITE=$(tput setaf 7)
+    else
+        BOLD=""
+        NORMAL=""
+        RED=""
+        GREEN=""
+        YELLOW=""
+        BLUE=""
+        MAGENTA=""
+        CYAN=""
+        WHITE=""
+    fi
+}
+
+update_color_variables
 
 # Display help message
 print_help() {
-    echo -e "${BOLD}NAME${NORMAL}"
-    echo -e "\t $0 - clean cache and temporary files"
+    repo_path=$(find $HOME -type d -name '42cleaner' -print -quit)
     echo -e "${BOLD}DESCRIPTION${NORMAL}"
-    echo -e "\t Clean cache and temporary files for 42 students with Linux/Ubuntu"
+    echo -e "\tThis script cleans cache and temporary files for 42 students using Linux/Ubuntu."
+    echo -e "\tIt helps to free up disk space and maintain system performance by removing unnecessary files from various directories."
     echo -e "${BOLD}USAGE${NORMAL}"
-    echo -e "\t clean [options] // clean.sh [options]"
+    echo -e "\tclean [options]"
     echo -e "${BOLD}OPTIONS${NORMAL}"
-    echo -e "\t -h \t Display this help message"
-    echo -e "\t -v \t Verbose mode: Show files deleted/to delete and their sizes"
-    echo -e "\t -n \t Dry run mode: Only show what would be deleted without\n\t\t actually deleting anything. Dry run also enables verbose mode"
-    echo -e "\t -i \t Interactive mode: Ask for confirmation before deleting\n\t\t each file or directory"
-    echo -e "\t -l \t List mode: ONLY List all directories and files to be\n\t\t cleaned without deleting"
-    echo -e "\t -f \t Force mode: Delete cache without asking for confirmation\n\t\t of runnning processes"
-    echo -e "\t -s \t Safe mode: When force mode enabled it temporarily\n\t\t disables it and checks the running processes"
-    echo -e "\n\t Configuring default modes:"
-    echo -e "\t -D \t Set default mode of script to the provided mode\n\t\t (e.g. -D v to enable verbose mode by default)"
-    echo -e "\t -u \t Unset default mode of script for the provided mode\n\t\t (e.g. -u v to disable verbose mode by default)"
-    echo -e "\t -r \t Reset default modes of script to the original values"
-    echo -e "\t\t These configurations are available with the following options:"
-    echo -e "\t\t v: Verbose mode | n: Dry run mode | i: Interactive mode\n\t\t f: Force mode | l: List mode"
-    echo -e ""
+    echo -e "\t-h, --help"
+    echo -e "\t\tDisplay this help message."
+    echo -e "\t-u, --update"
+    echo -e "\t\tUpdate the script from the repository."
+    echo -e "\t-v, --verbose"
+    echo -e "\t\tVerbose mode. Show files deleted/to delete and their sizes."
+    echo -e "\t-n, --dry-run"
+    echo -e "\t\tDry run mode. Only show what would be deleted without actually deleting anything. Enables verbose mode."
+    echo -e "\t-i, --interactive"
+    echo -e "\t\tInteractive mode. Ask for confirmation before deleting each file or directory."
+    echo -e "\t-l, --list"
+    echo -e "\t\tList mode. ONLY list all directories and files to be cleaned without deleting."
+    echo -e "\t-f, --force"
+    echo -e "\t\tForce mode. Delete cache without asking for confirmation of running processes."
+    echo -e "\t-s, --safe"
+    echo -e "\t\tSafe mode. Temporarily disables force mode and checks the running processes."
+    echo -e "\t-D [mode]"
+    echo -e "\t\tSet default mode of the script to the provided mode (e.g., -D v to enable verbose mode by default)."
+    echo -e "\t-U [mode]"
+    echo -e "\t\tUnset default mode of the script for the provided mode (e.g., -u v to disable verbose mode by default)."
+    echo -e "\t-R"
+    echo -e "\t\tReset default modes of the script to the original values."
+    echo -e "\t--color [${GREEN}true${NORMAL}|${RED}false${NORMAL}]"
+    echo -e "\t\tEnable or disable color output. Valid values are \`true\`, \`1\`, \`false\`, \`0\`."
+    echo -e "\t--set-default-color [${GREEN}true${NORMAL}|${RED}false${NORMAL}]"
+    echo -e "\t\tSet the default color output in the configuration file. Valid values are \`true\`, \`1\`, \`false\`, \`0\`."
+    echo -e "${BOLD}CONFIGURATION${NORMAL}"
+    echo -e "\tThe script uses a configuration file located at \`$HOME/.config/clean.conf\` for default settings."
+    echo -e "\tYou can modify this file directly to change the default behavior of the script."
+    echo -e "\tAlternatively, use the \`-D\`, \`-U\`, \`-R\` and \`--set-default-color\` options to configure defaults from the command line."
+    echo -e "${BOLD}MORE HELP${NORMAL}"
+    echo -e "\tFor more detailed documentation, please refer to the Documentation files in the repository."
+    #  Looking for the repository directory in $HOME and print the path if found
+    if [ -z  "$repo_path" ]; then
+        echo -e "\tRepository not found locally. You can find the Documentatation files at:"
+        echo -e "\t- clean.sh docs: https://github.com/jandrana/42cleaner/blob/main/docs/CLEAN_SH_DOCS.md"
+        echo -e "\t- clean.conf docs: https://github.com/jandrana/42cleaner/blob/main/docs/CLEAN_CONF_DOCS.md"
+        echo -e "\t- proces_name docs: https://github.com/jandrana/42cleaner/blob/main/docs/PROCESS_NAME_DOCS.md"
+    else
+        echo -e "\tRepository found at: $repo_path"
+        echo -e "\t- clean.sh docs: $repo_path/docs/CLEAN_SH_DOCS.md"
+        echo -e "\t- clean.conf docs: $repo_path/docs/CLEAN_CONF_DOCS.md"
+        echo -e "\t- proces_name docs: $repo_path/docs/PROCESS_NAME_DOCS.md"
+    fi
+    echo -e "${BOLD}SEE ALSO${NORMAL}"
+    echo -e "\tRefer to \`clean.conf\`, and \`process_name.sh\` as auxiliary files for additional functionalities "
+    echo -e "\tYou can find these files inside the /utils folder of the repository."
+    
+    echo -e "${BOLD}AUTHOR${NORMAL}"
+    echo -e "\tDeveloped by: Jandrana"
+    echo -e "\t      GitHub: https://github.com/jandrana"
+    echo -e "\t     42 user: ana-cast"
+    
+    echo -e "${BOLD}COPYRIGHT${NORMAL}"
+    echo -e "\tThis project is licensed under the MIT License."
 }
 
 
@@ -257,71 +361,87 @@ clean_paths() {
     fi
 }
 
+
+# Array of options to be passed to getopt
+OPTIONS=$(getopt -o hvnilfsD:U:Ru --long help,verbose,dry-run,interactive,list,force,safe,update,color:,set-default-color: -n 'clean' -- "$@")
+
+if [ $? != 0 ]; then
+    echo "Failed to parse options." >&2
+    exit 1
+fi
+
+eval set -- "$OPTIONS"
+
 # Parse command/script flags
-while getopts ":hvnilfsD:u:p:r" opt; do
-    case ${opt} in
-        D)
-            # Check that -D flag is used exclusively to avoid conflicts
-            if (( OPTIND <= $# )); then
-                echo -e "${RED}-D flag must be used exclusively.${NORMAL}"
+while true; do
+    case "$1" in
+        -D)
+            if [ $# -ne 3 ]; then
+                echo -e "${RED}$1 flag must be used exclusively.${NORMAL}"
                 exit 1
             fi
-            DEFAULT_MODE=$OPTARG
-            echo -e "${YELLOW}Setting default mode to $DEFAULT_MODE${NORMAL}"
+            DEFAULT_MODE="$2"
             # Set new defaults based on the provided modes
             if [[ "$DEFAULT_MODE" == *v* ]]; then
                 DEFAULT_VERBOSE=1
+                echo -e "${YELLOW}Setting default mode to verbose ${NORMAL}"
             fi
             if [[ "$DEFAULT_MODE" == *n* ]]; then
                 DEFAULT_DRY_RUN=1
+                echo -e "${YELLOW}Setting default mode to dry-run ${NORMAL}"
             fi
             if [[ "$DEFAULT_MODE" == *i* ]]; then
                 DEFAULT_INTERACTIVE=1
+                echo -e "${YELLOW}Setting default mode to interactive ${NORMAL}"
             fi
             if [[ "$DEFAULT_MODE" == *f* ]]; then
                 DEFAULT_FORCE=1
+                echo -e "${YELLOW}Setting default mode to force ${NORMAL}"
             fi
             if [[ "$DEFAULT_MODE" == *l* ]]; then
                 DEFAULT_LIST_ONLY=1
+                echo -e "${YELLOW}Setting default mode to list only ${NORMAL}"
             fi
             # Update the configuration file
             update_config_file
             # Exit after setting the new defaults
             exit 0
             ;;
-        u)
-            # Check that -u flag is used exclusively to avoid conflicts
-            if (( OPTIND <= $# )); then
-                echo -e "${RED}-u flag must be used exclusively.${NORMAL}"
+        -U)
+            if [ $# -ne 3 ]; then
+                echo -e "${RED}$1 flag must be used exclusively.${NORMAL}"
                 exit 1
             fi
-            DEFAULT_MODE=$OPTARG
-            echo -e "${YELLOW}Unsetting default mode $DEFAULT_MODE${NORMAL}"
+            DEFAULT_MODE="$2"
             # Unset defaults based on the provided modes
             if [[ "$DEFAULT_MODE" == *v* ]]; then
                 DEFAULT_VERBOSE=0
+                echo -e "${YELLOW}Unsetting default verbose mode${NORMAL}"
             fi
             if [[ "$DEFAULT_MODE" == *n* ]]; then
                 DEFAULT_DRY_RUN=0
+                echo -e "${YELLOW}Unsetting default dry-run mode${NORMAL}"
             fi
             if [[ "$DEFAULT_MODE" == *i* ]]; then
                 DEFAULT_INTERACTIVE=0
+                echo -e "${YELLOW}Unsetting default interactive mode${NORMAL}"
             fi
             if [[ "$DEFAULT_MODE" == *f* ]]; then
                 DEFAULT_FORCE=0
+                echo -e "${YELLOW}Unsetting default force mode${NORMAL}"
             fi
             if [[ "$DEFAULT_MODE" == *l* ]]; then
                 DEFAULT_LIST_ONLY=0
+                echo -e "${YELLOW}Unsetting default list only mode${NORMAL}"
             fi
             # Update the configuration file
             update_config_file
             # Exit after unsetting the new defaults
             exit 0
             ;;
-        r)
-            # Check that -r flag is used exclusively to avoid conflicts
-            if (( OPTIND <= $# )); then
-                echo -e "${RED}-r flag must be used exclusively.${NORMAL}"
+        -R)
+            if [ $# -ne 2 ]; then
+                echo -e "${RED}$1 flag must be used exclusively.${NORMAL}"
                 exit 1
             fi
             echo -e "${YELLOW}Resetting default modes to original values${NORMAL}"
@@ -331,44 +451,96 @@ while getopts ":hvnilfsD:u:p:r" opt; do
             DEFAULT_INTERACTIVE=0
             DEFAULT_FORCE=0
             DEFAULT_LIST_ONLY=0
+            colors=true
             # Update the configuration file
             update_config_file
             # Exit after resetting the defaults
             exit 0
             ;;
-        h)
+        --color)
+            shift
+            case "$1" in
+                true|1|false|0)
+                    colors=$1
+                    update_color_variables
+                    echo -e "Setting color output to ${GREEN}$1${NORMAL}"
+                    shift
+                    ;;
+                *)
+                    echo -e "${RED}Invalid value for --color. Valid values are true, 1, false, 0.${NORMAL}"
+                    exit 1
+                    ;;
+            esac
+            ;;
+        --set-default-color)
+            if [ $# -ne 3 ]; then
+                echo -e "${RED}$1 flag must be used exclusively.${NORMAL}"
+                exit 1
+            fi
+            shift
+            case "$1" in
+                true|1|false|0)
+                    colors=$1
+                    update_color_variables
+                    update_config_file
+                    echo -e "Setting default color output to ${GREEN}$1${NORMAL}"
+                    shift
+                    ;;
+                *)
+                    echo -e "${RED}Invalid value for --set-default-color. Valid values are true, 1, false, 0.${NORMAL}"
+                    exit 1
+                    ;;
+            esac
+            exit 0
+            ;;
+        -h|--help)
             print_help
             exit 0
             ;;
-        v)
+        -u|--update)
+            echo -e "Updating script from the repository"
+            update_script
+            exit 0
+            ;;
+        -v|--verbose)
             echo -e "Verbose mode enabled"
             verbose=1
+            shift
             ;;
-        n)
+        -n|--dry-run)
             echo -e "Dry run mode enabled"
             echo -e "Verbose mode enabled"
             echo -e "\n\t\t${RED}${BOLD}WARNING:${NORMAL} THIS IS A SIMULATION MODE"
             echo -e "\t\t\tNO FILES WILL BE DELETED"
             dry_run=1
             verbose=1
+            shift
             ;;
-        i)
+        -i|--interactive)
             echo -e "Interactive mode enabled"
             interactive=1
             verbose=1
+            shift
             ;;
-        l)
+        -l|--list)
             echo -e "List only mode enabled"
             list_only=1
-            dry_run=1 # Check if I can delete this
+            dry_run=1
+            shift
             ;;
-        f)
+        -f|--force)
             echo -e "Force mode enabled"
             force=1
+            shift
             ;;
-        s)
+        -s|--safe)
             echo -e "Safe mode enabled"
             safe_mode=1
+            shift
+            ;;
+        --)
+            shift
+            break
             ;;
         \?)
             echo -e "${RED}Invalid option: -$OPTARG${NORMAL}"
@@ -377,7 +549,6 @@ while getopts ":hvnilfsD:u:p:r" opt; do
             ;;
     esac
 done
-
 
 # Ensure that safe mode overrides force mode when enabled
 if [ "$safe_mode" -eq 1 ]; then

@@ -33,16 +33,24 @@ The `clean.sh` script is designed to clean cache and temporary files for 42 stud
 
 ### Command-line Options
 
-- `-h` : Display the help message.
-- `-v` : Verbose mode. Show files deleted/to delete and their sizes.
-- `-n` : Dry run mode. Only show what would be deleted without actually deleting anything. Enables verbose mode.
-- `-i` : Interactive mode. Ask for confirmation before deleting each file or directory.
-- `-l` : List mode. ONLY list all directories and files to be cleaned without deleting.
-- `-f` : Force mode. Delete cache without asking for confirmation of running processes.
-- `-s` : Safe mode. Temporarily disables force mode and checks the running processes.
-- `-D [mode]` : Set default mode of the script to the provided mode (e.g., `-D v` to enable verbose mode by default).
-- `-u [mode]` : Unset default mode of the script for the provided mode (e.g., `-u v` to disable verbose mode by default).
-- `-r` : Reset default modes of the script to the original values.
+**General:**
+- `-h, --help`: Display the help message.
+- `-u, --update`: Update the script from the repository.
+- `--color [true|1|false|0]`: Enable or disable color output. Valid values are `true`, `1`, `false`, `0`.
+- `--set-default-color [true|1|false|0]`: Set the default color output in the configuration file. Valid values are `true`, `1`, `false`, `0`.
+
+**Operation Modes:**
+- `-v, --verbose`: Verbose mode. Show files deleted/to delete and their sizes.
+- `-n, --dry-run`: Dry run mode. Only show what would be deleted without actually deleting anything. Enables verbose mode.
+- `-i, --interactive`: Interactive mode. Ask for confirmation before deleting each file or directory.
+- `-l, --list`: List mode. ONLY list all directories and files to be cleaned without deleting.
+- `-f, --force`: Force mode. Delete cache without asking for confirmation of running processes.
+- `-s, --safe`: Safe mode. Temporarily disables force mode and checks the running processes.
+
+**Default Configuration:**
+- `-D [mode]`: Set default mode of the script to the provided mode (e.g., `-D v` to enable verbose mode by default).
+- `-U [mode]`: Unset default mode of the script for the provided mode (e.g., `-U v` to disable verbose mode by default).
+- `-R`: Reset default modes of the script to the original values.
 
 ### Examples
 
@@ -91,11 +99,15 @@ This command will temporarily disable force mode and check for running processes
 
 - **Configuration:** The script initializes several variables and loads default configuration values from clean.conf if it exists.
 
+*The default behavior of the script can be configured by editing the `clean.conf` file located in `~/.config/clean.conf`. For more detailed information, refer to the [CLEAN_CONF_DOCS.md](docs/CLEAN_CONF_DOCS.md)*
+
 ### Functions
 
 | Function Name          | Description                                                |
 |------------------------|------------------------------------------------------------|
+| `update_script`        | Updates the script from the repository.                    |
 | `update_config_file`   | Updates the configuration file with new default values.    |
+| `update_color_variables` | Updates color variables based on user configuration.     |
 | `print_help`           | Displays the help message with usage instructions and options. |
 | `get_size_color`       | Determines the color based on the size of the files.       |
 | `print_size_color`     | Prints the size in a readable format with color.           |
