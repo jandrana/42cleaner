@@ -11,10 +11,11 @@
 - [Configuration](#configuration)
   - [Custom Paths](#custom-paths)
 - [Uninstall](#uninstall)
+- [Documentation](#documentation)
 - [Future Features](#future-features)
 - [Contributing](#contributing)
 - [License](#license)
-- [Documentation](#documentation)
+- [Acknowledgments](#acknowledgments)
 
 ## Features
 
@@ -69,6 +70,14 @@ To uninstall 42Cleaner, run the following command:
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/jandrana/42cleaner/main/uninstall.sh)"
 ```
 
+## Documentation
+
+For detailed information about the scripts and configuration files used in this project, refer to the following documents:
+
+- [CLEAN_SH_DOCS.md](docs/CLEAN_SH_DOCS.md): Detailed documentation for the `clean.sh` script.
+- [CLEAN_CONF_DOCS.md](docs/CLEAN_CONF_DOCS.md): Detailed documentation for the `clean.conf` configuration file.
+- [PROCESS_NAME_DOCS.md](docs/PROCESS_NAME_DOCS.md): Detailed documentation for the `process_name.sh` script.
+
 ## Future Features
 
 - **GUI Interface**: Develop a graphical user interface to make the script more user-friendly.
@@ -83,10 +92,6 @@ Contributions are welcome! Please open an issue or submit a pull request with an
 
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
-## Documentation
+## Acknowledgments
 
-For detailed information about the scripts and configuration files used in this project, refer to the following documents:
-
-- [CLEAN_SH_DOCS.md](docs/CLEAN_SH_DOCS.md): Detailed documentation for the `clean.sh` script.
-- [CLEAN_CONF_DOCS.md](docs/CLEAN_CONF_DOCS.md): Detailed documentation for the `clean.conf` configuration file.
-- [PROCESS_NAME_DOCS.md](docs/PROCESS_NAME_DOCS.md): Detailed documentation for the `process_name.sh` script.
+Special thanks to **Steamo** from 42 Malaga for checking out the scripts so thoroughly and the feedback given.
