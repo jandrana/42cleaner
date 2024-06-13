@@ -2,7 +2,7 @@
 
 # Author: Ana Alejandra Castillejo
 # Description: Script to clean cache and temporary files for 42 students with Linux/Ubuntu
-# Last Update: 11/06/2024
+# Last Update: 13/06/2024
 
 # List of default paths to clean along with their process name 
 declare -A DEF_PATHS_TO_CLEAN=(
