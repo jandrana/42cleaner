@@ -350,9 +350,9 @@ clean_paths() {
     local path=$1
     if [ -e "$path" ]; then
         local path_size_before=$(get_path_size "$path")
-        #if [ "$dry_run" -eq 0 ]; then
-            #rm -rf "$path"
-        #fi
+        if [ "$dry_run" -eq 0 ]; then
+            rm -rf "$path"
+        fi
         total_freed=$((total_freed + path_size_before))
 
         if [ "$verbose" -eq 1 ] && [ "$path_size_before" -gt 0 ]; then
