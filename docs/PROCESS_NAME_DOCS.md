@@ -135,7 +135,7 @@ To improve the chances of successfully identifying process names for application
 
 ```sh
 # 1. Default Directory: Sets a default directory to use.
-directory="$HOME/.config/Code/Cache"
+directory="$HOME/.config/VSCodium/"
 
 # 2. Custom Directory: Allows for a custom directory to be specified as an argument.
 if [ $# -gt 0 ]; then
