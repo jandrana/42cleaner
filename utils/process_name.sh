@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Default Directory path (if not given one as argument)
-directory="~/.config/Code/"
+# Default Directory path for checking its process (if not given one as argument)
+directory="$HOME/.config/VSCodium/"
 
 # Check if a path is passed as an argument
 if [ $# -gt 0 ]; then
