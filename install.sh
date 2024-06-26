@@ -35,7 +35,6 @@ mkdir -p "$INSTALL_DIR"
 cp clean.sh "$INSTALL_DIR/clean.sh"
 
 # Check if the configuration file exists in the utils directory, if so, copy it to $INSTALL_DIR
-if 
 if [ -f "utils/clean.conf" ]; then
 	cp utils/clean.conf "$INSTALL_DIR"
 fi
