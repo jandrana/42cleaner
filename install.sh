@@ -43,14 +43,14 @@ fi
 # Add an alias 'clean' to the shell configuration
 case $SHELL in
 	/bin/bash)
-		ALIAS_FILE="$HOME/.bashrc"
+		ALIAS_FILE=~/.bashrc
 		;;
 	/bin/zsh)
-		ALIAS_FILE="$HOME/.zshrc"
+		ALIAS_FILE=~/.zshrc
 		;;
 	*)
 		echo "Unknown shell. Please add the following alias manually to your shell configuration file:"
-		echo "alias clean='$HOME/clean.sh'"
+		echo "alias clean='$INSTALL_DIR/clean.sh'"
 		exit 1
 		;;
 esac

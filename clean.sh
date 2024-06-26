@@ -6,22 +6,22 @@
 
 # List of default paths to clean along with their process name 
 declare -A DEF_PATHS_TO_CLEAN=(
-    ["$HOME/.cache"]="none"
-    ["$HOME/.var/app/com.google.Chrome/cache/"]="chrome"
-    ["$HOME/.config/Code/Cache"]="code"
-    ["$HOME/.config/Code/Shared Dictionary/cache"]="code"
-    ["$HOME/.config/Code/WebStorage/5/CacheStorage"]="code"
-    ["$HOME/.config/Code/CachedData"]="code"
-    ["$HOME/.config/GitKraken/Cache"]="gitkraken"
-    ["$HOME/.config/GitKraken/Shared Dictionary/cache"]="gitkraken"
-    ["$HOME/.config/google-chrome/Default/Shared Dictionary/cache"]="chrome"
-    ["$HOME/snap/slack/common/.cache"]="slack"
-    ["$HOME/snap/slack/149/.config/Slack/Cache"]="slack"
-    ["$HOME/snap/code/common/.cache"]="code"
-    ["$HOME/snap/obsidian/common/.cache"]="obsidian"
-    ["$HOME/snap/gitkraken/common/.cache"]="gitkraken"
-    ["$HOME/francinette/temp"]="none"
-    ["$HOME/.local/share/Trash"]="none"
+    ["~/.cache"]="none"
+    ["~/.var/app/com.google.Chrome/cache/"]="chrome"
+    ["~/.config/Code/Cache"]="code"
+    ["~/.config/Code/Shared Dictionary/cache"]="code"
+    ["~/.config/Code/WebStorage/5/CacheStorage"]="code"
+    ["~/.config/Code/CachedData"]="code"
+    ["~/.config/GitKraken/Cache"]="gitkraken"
+    ["~/.config/GitKraken/Shared Dictionary/cache"]="gitkraken"
+    ["~/.config/google-chrome/Default/Shared Dictionary/cache"]="chrome"
+    ["~/snap/slack/common/.cache"]="slack"
+    ["~/snap/slack/149/.config/Slack/Cache"]="slack"
+    ["~/snap/code/common/.cache"]="code"
+    ["~/snap/obsidian/common/.cache"]="obsidian"
+    ["~/snap/gitkraken/common/.cache"]="gitkraken"
+    ["~/francinette/temp"]="none"
+    ["~/.local/share/Trash"]="none"
     # Add more paths to clean here with the same format use "none" as process name if not needed
 )
 
@@ -79,10 +79,10 @@ fi
 
 # Update Script
 update_script() {
-    local repo_dir=$(find $HOME -type d -name '42cleaner' -print -quit)
+    local repo_dir=$(find ~ -type d -name '42cleaner' -print -quit)
 
     if [ -z "$repo_dir" ]; then
-        echo -e "${RED}Repository directory not found in $HOME.${NORMAL}"
+        echo -e "${RED}Repository directory not found in ~.${NORMAL}"
         echo -e "Please make sure the repository is cloned and called '42cleaner'."
         exit 1
     fi
@@ -138,7 +138,7 @@ update_color_variables
 
 # Display help message
 print_help() {
-    repo_path=$(find $HOME -type d -name '42cleaner' -print -quit)
+    repo_path=$(find ~ -type d -name '42cleaner' -print -quit)
     echo -e "${BOLD}DESCRIPTION${NORMAL}"
     echo -e "\tThis script cleans cache and temporary files for 42 students using Linux/Ubuntu."
     echo -e "\tIt helps to free up disk space and maintain system performance by removing unnecessary files from various directories."
@@ -172,12 +172,12 @@ print_help() {
     echo -e "\t--set-default-color [${GREEN}true${NORMAL}|${RED}false${NORMAL}]"
     echo -e "\t\tSet the default color output in the configuration file. Valid values are \`true\`, \`1\`, \`false\`, \`0\`."
     echo -e "${BOLD}CONFIGURATION${NORMAL}"
-    echo -e "\tThe script uses a configuration file located at \`$HOME/.config/clean.conf\` for default settings."
+    echo -e "\tThe script uses a configuration file located at \`~/.42cleaner/clean.conf\` for default settings."
     echo -e "\tYou can modify this file directly to change the default behavior of the script."
     echo -e "\tAlternatively, use the \`-D\`, \`-U\`, \`-R\` and \`--set-default-color\` options to configure defaults from the command line."
     echo -e "${BOLD}MORE HELP${NORMAL}"
     echo -e "\tFor more detailed documentation, please refer to the Documentation files in the repository."
-    #  Looking for the repository directory in $HOME and print the path if found
+    #  Looking for the repository directory in home directory and print the path if found
     if [ -z  "$repo_path" ]; then
         echo -e "\tRepository not found locally. You can find the Documentatation files at:"
         echo -e "\t- clean.sh docs: https://github.com/jandrana/42cleaner/blob/main/docs/CLEAN_SH_DOCS.md"
@@ -229,12 +229,12 @@ print_size_color() {
 
 # Get storage usage of home directory in a readable format
 get_storage_usage() {
-    df -h "$HOME" | awk 'NR==2 {print $4}'
+    df -h "~" | awk 'NR==2 {print $4}'
 }
 
 # Print storage usage of home directory
 print_storage_usage() {
-    echo -e "\tAvailable space in $HOME: ${BOLD}$(get_storage_usage)${NORMAL}"
+    echo -e "\tAvailable space in home directory: ${BOLD}$(get_storage_usage)${NORMAL}"
 }
 
 # Function to get the size of a given path
@@ -350,9 +350,9 @@ clean_paths() {
     local path=$1
     if [ -e "$path" ]; then
         local path_size_before=$(get_path_size "$path")
-        #if [ "$dry_run" -eq 0 ]; then
-            #rm -rf "$path"
-        #fi
+        if [ "$dry_run" -eq 0 ]; then
+            rm -rf "$path"
+        fi
         total_freed=$((total_freed + path_size_before))
 
         if [ "$verbose" -eq 1 ] && [ "$path_size_before" -gt 0 ]; then
@@ -651,7 +651,7 @@ total_freed_read=$(print_size_color "$total_freed")
 if [ "$list_only" -eq 0 ]; then
     echo -e "\t$(get_size_color "$total_freed")TOTAL CLEAN: ${BOLD}$total_freed_read\n"
     echo -ne "${RED}${BOLD}BEFORE: ${NORMAL}"
-    echo -e "Available space in $HOME: ${BOLD}${before_cleaning}${NORMAL}"
+    echo -e "Available space in home directory: ${BOLD}${before_cleaning}${NORMAL}"
     echo -ne "${GREEN}${BOLD}AFTER:${NORMAL}"
     print_storage_usage
 else

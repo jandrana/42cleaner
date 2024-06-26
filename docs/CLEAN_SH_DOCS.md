@@ -99,7 +99,7 @@ This command will temporarily disable force mode and check for running processes
 
 - **Configuration:** The script initializes several variables and loads default configuration values from clean.conf if it exists.
 
-*The default behavior of the script can be configured by editing the `clean.conf` file located in `~/.config/clean.conf`. For more detailed information, refer to the [CLEAN_CONF_DOCS.md](docs/CLEAN_CONF_DOCS.md)*
+*The default behavior of the script can be configured by editing the `clean.conf` file located in `~/.42cleaner/clean.conf`. For more detailed information, refer to the [CLEAN_CONF_DOCS.md](docs/CLEAN_CONF_DOCS.md)*
 
 ### Functions
 
@@ -126,8 +126,8 @@ You can add custom paths to the `DEF_PATHS_TO_CLEAN` array in the `clean.sh` scr
   ```sh
   declare -A DEF_PATHS_TO_CLEAN=(
 	# (...)
-    ["$HOME/.cache"]="none"
-    ["$HOME/.var/app/com.google.Chrome/cache/"]="google-chrome"
+    ["~/.cache"]="none"
+    ["~/.var/app/com.google.Chrome/cache/"]="google-chrome"
     # Add more paths here
   )
   ```
@@ -135,15 +135,15 @@ You can add custom paths to the `DEF_PATHS_TO_CLEAN` array in the `clean.sh` scr
 1. **Add your custom path(s):**
   ```sh
   declare -A DEF_PATHS_TO_CLEAN=(
-	["$HOME/custom/path"]="process-name"
+	["~/custom/path"]="process-name"
   )
   ```
-  - Replace `$HOME/custom/path` with the actual path you want to clean.
+  - Replace `~/custom/path` with the actual path you want to clean.
   - Replace `process-name` with the name of the process that uses this path. If no specific process is associated, use `"none"`.
 
 ### How to Determine the Process Name of a Path
 
-To find the process name associated with a specific path, you can use the `process_name.sh` script included in this project. This script helps identify which processes are accessing files within a specified directory.
+To find the process name associated with a specific path, you can use the `process_name.sh` script included in the utils folder of this repository. This script helps identify which processes are accessing files within a specified directory.
 
 For detailed instructions on how to use the `process_name.sh` script, please refer to the [PROCESS_NAME_DOCS.md](PROCESS_NAME_DOCS.md) documentation.
 
@@ -155,8 +155,8 @@ Example:
 
 ```sh
 declare -A DEF_PATHS_TO_CLEAN=(
-  ["$HOME/.config/Code/"]="code"
-  ["$HOME/.config/google-chrome/Default/Cache"]="chrome"
+  ["~/.config/Code/"]="code"
+  ["~/.config/google-chrome/Default/Cache"]="chrome"
   # Add more paths here
 )
 ```

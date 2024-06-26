@@ -54,9 +54,9 @@ Choosing the right directory to monitor significantly impacts the likelihood of 
 
 **Application Paths:**
 
-- **Good Path (high chance of success):** `$HOME/.config/Code/` or `$HOME/snap/slack/`
+- **Good Path (high chance of success):** `~/.config/Code/` or `~/snap/slack/`
   - This paths include the main configuration directory for the application, which is more likely to be accessed by the main process of the application.
-- **Bad Path (low chance of success):** `$HOME/.config/Code/Shared Dictionary/cache` or `$HOME/snap/slack/149/.config/Slack/Cache`
+- **Bad Path (low chance of success):** `~/.config/Code/Shared Dictionary/cache` or `~/snap/slack/149/.config/Slack/Cache`
   - This are more specific subdirectories, often used for temporary cache files. The main application process may not frequently access these files directly.
 
 ### Extensive list of Directory Paths
@@ -64,78 +64,78 @@ Choosing the right directory to monitor significantly impacts the likelihood of 
 To improve the chances of successfully identifying process names for applications, use paths such as these, depending on their directory locations (.config | .var/app | snap):
 
 - **Code**:
-  - .config: `$HOME/.config/Code/`
-  - snap: `$HOME/snap/code/`
+  - .config: `~/.config/Code/`
+  - snap: `~/snap/code/`
 
 - **Google Chrome**:
-  - .config: `$HOME/.config/google-chrome/`
-  - .var/app: `$HOME/.var/app/com.google.Chrome/`
+  - .config: `~/.config/google-chrome/`
+  - .var/app: `~/.var/app/com.google.Chrome/`
 
 - **Firefox**:
-  - .config: `$HOME/.mozilla/firefox/`
-  - snap: `$HOME/snap/firefox/`
+  - .config: `~/.mozilla/firefox/`
+  - snap: `~/snap/firefox/`
 
 - **Brave Browser**:
-  - .config: `$HOME/.config/BraveSoftware/Brave-Browser/`
+  - .config: `~/.config/BraveSoftware/Brave-Browser/`
 
 - **Discord**:
-  - .config: `$HOME/.config/discord/`
+  - .config: `~/.config/discord/`
 
 - **Spotify**:
-  - .config: `$HOME/.config/spotify/`
-  - snap: `$HOME/snap/spotify/`
+  - .config: `~/.config/spotify/`
+  - snap: `~/snap/spotify/`
 
 - **VLC Media Player**:
-  - .config: `$HOME/.config/vlc/`
-  - .var/app: `$HOME/.var/app/org.videolan.VLC/`
+  - .config: `~/.config/vlc/`
+  - .var/app: `~/.var/app/org.videolan.VLC/`
 
 - **Gnome Terminal**:
-  - .config: `$HOME/.config/gnome-terminal/`
+  - .config: `~/.config/gnome-terminal/`
 
 - **JetBrains**:
-  - .config: `$HOME/.config/JetBrains/`
+  - .config: `~/.config/JetBrains/`
 
 - **Zoom**:
-  - .config: `$HOME/.config/zoom/`
-  - snap: `$HOME/snap/zoom/`
+  - .config: `~/.config/zoom/`
+  - snap: `~/snap/zoom/`
 
 - **Skype for Linux**:
-  - .config: `$HOME/.config/skypeforlinux/`
+  - .config: `~/.config/skypeforlinux/`
 
 - **Slack**:
-  - .config: `$HOME/.config/Slack/`
-  - snap: `$HOME/snap/slack/`
+  - .config: `~/.config/Slack/`
+  - snap: `~/snap/slack/`
 
 - **Telegram Desktop**:
-  - .config: `$HOME/.config/TelegramDesktop/`
+  - .config: `~/.config/TelegramDesktop/`
 
 - **Microsoft Teams**:
-  - .config: `$HOME/.config/teams/`
+  - .config: `~/.config/teams/`
 
 - **Obsidian**:
-  - snap: `$HOME/snap/obsidian/`
+  - snap: `~/snap/obsidian/`
 
 - **GitKraken**:
-  - snap: `$HOME/snap/gitkraken/`
+  - snap: `~/snap/gitkraken/`
 
 - **Chromium**:
-  - snap: `$HOME/snap/chromium/`
+  - snap: `~/snap/chromium/`
 
 - **GIMP**:
-  - .var/app: `$HOME/.var/app/org.gimp.GIMP/`
+  - .var/app: `~/.var/app/org.gimp.GIMP/`
 
 - **LibreOffice**:
-  - .var/app: `$HOME/.var/app/org.libreoffice.LibreOffice/`
+  - .var/app: `~/.var/app/org.libreoffice.LibreOffice/`
 
 - **FileZilla**:
-  - .var/app: `$HOME/.var/app/org.filezillaproject.Filezilla/`
+  - .var/app: `~/.var/app/org.filezillaproject.Filezilla/`
 
 
 ## Detailed Script Explanation
 
 ```sh
-# 1. Default Directory: Sets a default directory to monitor.
-directory="$HOME/.config/Code/Cache"
+# 1. Default Directory: Sets a default directory to use.
+directory="~/.config/Code/Cache"
 
 # 2. Custom Directory: Allows for a custom directory to be specified as an argument.
 if [ $# -gt 0 ]; then

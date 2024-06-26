@@ -3,18 +3,15 @@
 INSTALL_DIR=$HOME/.42cleaner
 
 # Remove the .42cleaner folder from the $HOME directory
-rm -f $HOME/.42cleaner
-
-# Remove the clean.conf configuration file from the $HOME/.config directory
-rm -f $HOME/.config/clean.conf
+rm -f $INSTALL_DIR
 
 # Remove the 'clean' alias from the shell configuration
 case $SHELL in
 	/bin/bash)
-		ALIAS_FILE="$HOME/.bashrc"
+		ALIAS_FILE="~/.bashrc"
 		;;
 	/bin/zsh)
-		ALIAS_FILE="$HOME/.zshrc"
+		ALIAS_FILE="~/.zshrc"
 		;;
 	*)
 		echo "Unknown shell. Please remove the following alias manually:"

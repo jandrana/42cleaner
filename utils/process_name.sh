@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default Directory path (if not given one as argument)
-directory="$HOME/.config/Code/"
+directory="~/.config/Code/"
 
 # Check if a path is passed as an argument
 if [ $# -gt 0 ]; then
