@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Remove the clean.sh script from the $HOME directory
-rm -f $HOME/clean.sh
+INSTALL_DIR=$HOME/.42cleaner
+
+# Remove the .42cleaner folder from the $HOME directory
+rm -f $HOME/.42cleaner
 
 # Remove the clean.conf configuration file from the $HOME/.config directory
 rm -f $HOME/.config/clean.conf
@@ -16,7 +18,7 @@ case $SHELL in
 		;;
 	*)
 		echo "Unknown shell. Please remove the following alias manually:"
-		echo "alias clean='$HOME/clean.sh'"
+		echo "alias clean='$INSTALL_DIR/clean.sh'"
 		exit 1
 		;;
 esac
@@ -24,7 +26,7 @@ esac
 # Check if the alias exists
 if grep -q "alias clean=" $ALIAS_FILE; then
 	existing_alias=$(grep "alias clean=" $ALIAS_FILE)
-	expected_alias="alias clean='$HOME/clean.sh'"
+	expected_alias="alias clean='$INSTALL_DIR/clean.sh'"
 	if [ "$existing_alias" == "$expected_alias" ]; then
 		# Use sed to remove the line containing the alias
 		sed -i '/alias clean=/d' $ALIAS_FILE

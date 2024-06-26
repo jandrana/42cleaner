@@ -2,7 +2,7 @@
 
 # Author: Ana Alejandra Castillejo
 # Description: Script to clean cache and temporary files for 42 students with Linux/Ubuntu
-# Last Update: 11/06/2024
+# Last Update: 26/06/2024
 
 # List of default paths to clean along with their process name 
 declare -A DEF_PATHS_TO_CLEAN=(
@@ -26,6 +26,7 @@ declare -A DEF_PATHS_TO_CLEAN=(
 )
 
 # Initialize variables
+CONFIG_FILE="$HOME/.42cleaner/clean.conf"
 total_freed=0
 total_skipped=0
 verbose=0
@@ -56,7 +57,6 @@ update_config_file() {
 }
 
 # Load defaults from configuration file if it exists or create it with default values
-CONFIG_FILE="$HOME/.config/clean.conf"
 CONFIG_DIR=$(dirname "$CONFIG_FILE")
 if [ ! -d "$CONFIG_DIR" ]; then
     mkdir -p "$CONFIG_DIR"
@@ -103,7 +103,7 @@ update_script() {
         git pull origin main
 
         # Copy the updated script to $HOME
-        cp clean.sh $HOME/clean.sh
+        cp clean.sh $HOME/.42cleaner/clean.sh
         echo -e "${GREEN}Script updated successfully from the repository.${NORMAL}"
     fi
     exit 0
