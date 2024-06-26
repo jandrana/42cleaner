@@ -26,8 +26,8 @@ if [ ! -f "clean.sh" ]; then
 	exit 1
 fi
 
-# Give execution permissions to clean.sh, process_name.sh and uninstall.sh scripts
-chmod +x clean.sh utils/process_name.sh uninstall.sh
+# Give execution permissions to clean.sh, uninstall.sh and utils/ scripts
+chmod +x clean.sh uninstall.sh utils/process_name.sh utils/find_cache.sh
 
 # Create the .42cleaner directory in the home directory
 mkdir -p "$INSTALL_DIR"
