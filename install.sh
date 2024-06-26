@@ -18,7 +18,7 @@ fi
 echo ""
 
 # Navigate to the repository
-cd "$REPO_DIR" || { printf "Failed to navigate to the repository directory. Exiting..."; exit 1; }
+cd "$REPO_DIR" || { printf "Failed to navigate to the repository directory. Exiting...\n"; exit 1; }
 
 # Check if clean.sh exists
 if [ ! -f "clean.sh" ]; then
@@ -50,7 +50,7 @@ case $SHELL in
 		;;
 	*)
 		printf "Unknown shell. Please add the following alias manually to your shell configuration file:\n"
-		printf "alias clean='$HOME/clean.sh'"
+		printf "alias clean='$HOME/clean.sh'\n"
 		exit 1
 		;;
 esac
@@ -125,4 +125,4 @@ if [ $create_alias -eq 1 ]; then
 fi
 
 printf "SUCCESS: Installation completed\n"
-printf "WARNING: Please restart any open shell sessions for the changes to take effect."
+printf "WARNING: Please restart any open shell sessions for the changes to take effect.\n"
