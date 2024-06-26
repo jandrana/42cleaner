@@ -58,7 +58,7 @@ For detailed information about available options, refer to the [CLEAN_SH_DOCS.md
 
 ## Configuration
 
-The default behavior of the script can be configured by editing the `clean.conf` file located in `~/.config/clean.conf`. For more detailed information, refer to the [CLEAN_CONF_DOCS.md](docs/CLEAN_CONF_DOCS.md).
+The default behavior of the script can be configured by editing the `clean.conf` file located in `~/.42cleaner/clean.conf`. For more detailed information, refer to the [CLEAN_CONF_DOCS.md](docs/CLEAN_CONF_DOCS.md).
 
 
 ### Custom Paths
