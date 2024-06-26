@@ -1,7 +1,7 @@
 #!/bin/bash
 
-REPO_DIR=~/42cleaner
-INSTALL_DIR=~/.42cleaner
+REPO_DIR=$HOME/42cleaner
+INSTALL_DIR=$HOME/.42cleaner
 
 # Check if the repository already exists in the home directory
 if [ -d "$REPO_DIR" ]; then
@@ -26,9 +26,7 @@ if [ ! -f "clean.sh" ]; then
 fi
 
 # Give execution permissions to clean.sh, process_name.sh and uninstall.sh scripts
-chmod +x clean.sh
-chmod +x utils/process_name.sh
-chmod +x uninstall.sh
+chmod +x clean.sh utils/process_name.sh uninstall.sh
 
 # Create the .42cleaner directory in the home directory
 mkdir -p "$INSTALL_DIR"
@@ -36,7 +34,8 @@ mkdir -p "$INSTALL_DIR"
 # Copy the clean.sh script to the home directory
 cp clean.sh "$INSTALL_DIR/clean.sh"
 
-# Check if the configuration file exists in the utils directory, if so, copy it to ~/.42cleaner
+# Check if the configuration file exists in the utils directory, if so, copy it to $INSTALL_DIR
+if 
 if [ -f "utils/clean.conf" ]; then
 	cp utils/clean.conf "$INSTALL_DIR"
 fi
@@ -44,14 +43,14 @@ fi
 # Add an alias 'clean' to the shell configuration
 case $SHELL in
 	/bin/bash)
-		ALIAS_FILE=~/.bashrc
+		ALIAS_FILE="$HOME/.bashrc"
 		;;
 	/bin/zsh)
-		ALIAS_FILE=~/.zshrc
+		ALIAS_FILE="$HOME/.zshrc"
 		;;
 	*)
 		echo "Unknown shell. Please add the following alias manually to your shell configuration file:"
-		echo "alias clean='$INSTALL_DIR/clean.sh'"
+		echo "alias clean='$HOME/clean.sh'"
 		exit 1
 		;;
 esac
@@ -61,7 +60,7 @@ if grep -q "alias clean=" "$ALIAS_FILE"; then
 	existing_alias=$(grep "alias clean=" "$ALIAS_FILE")
 	new_alias="alias clean='$INSTALL_DIR/clean.sh'"
 	if [ "$existing_alias" == "$new_alias" ]; then
-		echo "The alias 'clean' already exists and is the same as the one being installed. No changes were made."
+		echo "INFO: The alias 'clean' already exists and is the same as the one being installed. No changes were made."
 	else
 		read -p "The alias 'clean' already exists but is different. Do you want to overwrite it? (y/n) " overwrite
 		if [[ $overwrite =~ ^[Nn]$ ]]; then
@@ -69,15 +68,22 @@ if grep -q "alias clean=" "$ALIAS_FILE"; then
 			if [[ $rename =~ ^[Yy]$ ]]; then
 				read -p "Enter the new alias name: " new_alias_name
 				echo "alias $new_alias_name='$INSTALL_DIR/clean.sh'" >> "$ALIAS_FILE"
+				echo "INFO: New alias '$new_alias_name' created in $ALIAS_FILE for running the clean.sh script"
+				echo -e "\t alias $new_alias_name='$INSTALL_DIR/clean.sh'"
 			else
-				echo "No alias was added. You can add it manually later with 'alias clean=$INSTALL_DIR/clean.sh'"
+				echo "No alias added. You can add it manually later using 'alias clean=$INSTALL_DIR/clean.sh'"
 			fi
 		else
 			echo "alias clean='$INSTALL_DIR/clean.sh'" >> "$ALIAS_FILE"
+			echo "INFO: New alias 'clean' created in $ALIAS_FILE for running the clean.sh script"
+			echo -e "\t alias clean='$INSTALL_DIR/clean.sh'"
 		fi
 	fi
 else
 	echo "alias clean='$INSTALL_DIR/clean.sh'" >> "$ALIAS_FILE"
+	echo "INFO: New alias 'clean' created in $ALIAS_FILE for running the clean.sh script"
+	echo -e "\t alias clean='$INSTALL_DIR/clean.sh'"
 fi
 
-echo "Installation complete. Please restart any open shell sessions for the changes to take effect."
+echo -e "SUCCESS: Installation completed"
+echo -e "WARNING: Please restart any open shell sessions for the changes to take effect."
