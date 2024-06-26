@@ -70,6 +70,22 @@ To uninstall 42Cleaner, run the following command:
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/jandrana/42cleaner/main/uninstall.sh)"
 ```
 
+This command will run the `uninstall.sh` script and delete any files/alias created by the `install.sh`.
+
+<ul><details>
+
+<summary><b>Manual Uninstall</b></summary>
+
+If you prefer, you can do it manually by deleting the `$HOME/.42cleaner` folder.
+
+If an alias for running the clean script was created during installation/usage of the script, you will also need to delete the following line from your `~/.zshrc` or `~/.bashrc` file.
+```sh
+alias clean='$HOME/.42cleaner/clean.sh'
+```
+
+NOTE: 'clean' is the default name for the alias, take into account that it may have change if you renamed the alias during/after the installation of the script.
+</details></ul>
+
 ## Documentation
 
 For detailed information about the scripts and configuration files used in this project, refer to the following documents:
