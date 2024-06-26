@@ -48,7 +48,7 @@ clean [options]
 
 Usage example (without using aliases):
 ```bash
-~/.42cleaner/clean.sh [options]
+$HOME/.42cleaner/clean.sh [options]
 ```
 
 

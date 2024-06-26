@@ -126,8 +126,8 @@ You can add custom paths to the `DEF_PATHS_TO_CLEAN` array in the `clean.sh` scr
   ```sh
   declare -A DEF_PATHS_TO_CLEAN=(
 	# (...)
-    ["~/.cache"]="none"
-    ["~/.var/app/com.google.Chrome/cache/"]="google-chrome"
+    ["$HOME/.cache"]="none"
+    ["$HOME/.var/app/com.google.Chrome/cache/"]="google-chrome"
     # Add more paths here
   )
   ```
@@ -135,10 +135,10 @@ You can add custom paths to the `DEF_PATHS_TO_CLEAN` array in the `clean.sh` scr
 1. **Add your custom path(s):**
   ```sh
   declare -A DEF_PATHS_TO_CLEAN=(
-	["~/custom/path"]="process-name"
+	["$HOME/custom/path"]="process-name"
   )
   ```
-  - Replace `~/custom/path` with the actual path you want to clean.
+  - Replace `$HOME/custom/path` with the actual path you want to clean.
   - Replace `process-name` with the name of the process that uses this path. If no specific process is associated, use `"none"`.
 
 ### How to Determine the Process Name of a Path
@@ -155,8 +155,8 @@ Example:
 
 ```sh
 declare -A DEF_PATHS_TO_CLEAN=(
-  ["~/.config/Code/"]="code"
-  ["~/.config/google-chrome/Default/Cache"]="chrome"
+  ["$HOME/.config/Code/"]="code"
+  ["$HOME/.config/google-chrome/Default/Cache"]="chrome"
   # Add more paths here
 )
 ```
