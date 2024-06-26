@@ -3,7 +3,12 @@
 INSTALL_DIR=$HOME/.42cleaner
 
 # Remove the .42cleaner folder from the home directory
-rm -rf $INSTALL_DIR
+if [ -d "$INSTALL_DIR" ]; then
+	rm -rf $INSTALL_DIR
+	echo -e "SUCCESS: $INSTALL_DIR found and deleted\n"
+else
+	echo -e "WARNING: The folder '.42cleaner/' could not be found in the home directory.\n\t If the folder is located elsewhere or named differently, delete it manually.\n"
+fi
 
 # Remove the 'clean' alias from the shell configuration
 case $SHELL in
@@ -25,18 +30,21 @@ if grep -q "alias clean=" $ALIAS_FILE; then
 	existing_alias=$(grep "alias clean=" $ALIAS_FILE)
 	expected_alias="alias clean='$INSTALL_DIR/clean.sh'"
 	if [ "$existing_alias" == "$expected_alias" ]; then
-		# Use sed to remove the line containing the alias
+		# 'sed' used to remove the lines containing the alias and its comment
+		sed -i '/Alias for clean.sh/d' $ALIAS_FILE
 		sed -i '/alias clean=/d' $ALIAS_FILE
+		echo -e "SUCCESS: Alias 'clean' removed from $ALIAS_FILE file\n"
 	else
-		echo -e "Failed to remove alias 'clean' from $ALIAS_FILE"
-		echo -e "Possible reasons:"
-		echo -e "\t3. An alias 'clean' exists in your $ALIAS_FILE file but is not for the clean.sh script. No actions needed, such alias has not been removed, since is not from this script"
+		echo -e "INFO: No alias removed from $ALIAS_FILE"
+		echo -e "\tAn alias 'clean' exists in your configuration file but is not for the clean.sh script."
+		echo -e "\tSuch alias has not been removed, since it is not from the 42cleaner\n"
 	fi
 else
-	echo -e "INFO: No alias was removed from $ALIAS_FILE"
-	echo -e "If you believe this might be an error, consider the following cases:"
-	echo -e "\t1. The alias 'clean' doesn't exist in $ALIAS_FILE. No actions needed"
-	echo -e "\t2. An alias for the clean.sh exists in $ALIAS_FILE but is not named 'clean'. Please, remove it manually by editing the $ALIAS_FILE file"
+	echo -e "WARNING: No alias was removed from $ALIAS_FILE"
+	echo -e "\tPossible reasons:"
+	echo -e "\t1. The alias 'clean' doesn't exist. No actions needed"
+	echo -e "\t2. An alias for the clean.sh exists but is not named 'clean'"
+	echo -e "\t   Please, remove it manually by editing the $ALIAS_FILE file\n"
 fi
 
 echo -e "SUCCESS: Successfully uninstalled"

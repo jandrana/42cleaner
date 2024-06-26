@@ -7,8 +7,8 @@ INSTALL_DIR=$HOME/.42cleaner
 if [ -d "$REPO_DIR" ]; then
 	read -p "The 42cleaner repository already exists. Do you want to update it? (y/n) " update
 	case $update in
-		[Yy]* ) cd "$REPO_DIR"; git pull; break ;;
-		* ) echo "No changes were made to the repository."; break ;;
+		[Yy]* ) cd "$REPO_DIR"; git pull; echo "" ;;
+		* ) echo -e "No changes were made to the repository.\n" ;;
 	esac
 else
 	git clone https://github.com/jandrana/42cleaner "$REPO_DIR"
@@ -19,7 +19,7 @@ cd "$REPO_DIR" || { echo "Failed to navigate to the repository directory. Exitin
 
 # Check if clean.sh exists
 if [ ! -f "clean.sh" ]; then
-	echo "clean.sh not found in the current directory. Make sure the repository is correctly cloned."
+	echo -e "clean.sh not found in the current directory. Make sure the repository is correctly cloned.\n"
 	exit 1
 fi
 
@@ -57,29 +57,37 @@ if grep -q "alias clean=" "$ALIAS_FILE"; then
 	existing_alias=$(grep "alias clean=" "$ALIAS_FILE")
 	new_alias="alias clean='$INSTALL_DIR/clean.sh'"
 	if [ "$existing_alias" == "$new_alias" ]; then
-		echo "INFO: The alias 'clean' already exists and is the same as the one being installed. No changes were made."
+		echo -e "INFO: The alias 'clean' already exists and is the same as the one being installed. No changes were made.\n"
 	else
 		read -p "The alias 'clean' already exists but is different. Do you want to overwrite it? (y/n) " overwrite
-		if [[ $overwrite =~ ^[Nn]$ ]]; then
-			read -p "Do you want to use another name for the alias? (y/n) " rename
-			if [[ $rename =~ ^[Yy]$ ]]; then
-				read -p "Enter the new alias name: " new_alias_name
-				echo "alias $new_alias_name='$INSTALL_DIR/clean.sh'" >> "$ALIAS_FILE"
-				echo "INFO: New alias '$new_alias_name' created in $ALIAS_FILE for running the clean.sh script"
-				echo -e "\t alias $new_alias_name='$INSTALL_DIR/clean.sh'"
-			else
-				echo "No alias added. You can add it manually later using 'alias clean=$INSTALL_DIR/clean.sh'"
-			fi
-		else
-			echo "alias clean='$INSTALL_DIR/clean.sh'" >> "$ALIAS_FILE"
-			echo "INFO: New alias 'clean' created in $ALIAS_FILE for running the clean.sh script"
-			echo -e "\t alias clean='$INSTALL_DIR/clean.sh'"
-		fi
+		case $overwrite in
+			[Nn]* )
+				read -p "Do you want to use another name for the alias? (y/n) " rename
+				case $rename in
+					[Yy]* )
+						read -p "Enter the new alias name: " new_alias_name
+						echo "alias $new_alias_name='$INSTALL_DIR/clean.sh'" >> "$ALIAS_FILE"
+						echo "INFO: New alias '$new_alias_name' created in $ALIAS_FILE for running the clean.sh script"
+						echo -e "\t alias $new_alias_name='$INSTALL_DIR/clean.sh'\n"
+						;;
+					* )
+						echo -e "INFO: No alias added. You can add it manually later using 'alias clean=$INSTALL_DIR/clean.sh'\n"
+						;;
+				esac
+				;;
+			* )
+				sed -i '/alias clean=/d' $ALIAS_FILE
+				echo "alias clean='$INSTALL_DIR/clean.sh'" >> "$ALIAS_FILE"
+				echo "INFO: New alias 'clean' created in $ALIAS_FILE for running the clean.sh script"
+				echo -e "\t alias clean='$INSTALL_DIR/clean.sh'\n"
+				;;
+		esac
 	fi
 else
+	echo -e "# Alias for clean.sh (42cleaner by Jandrana)" >> "$ALIAS_FILE"
 	echo "alias clean='$INSTALL_DIR/clean.sh'" >> "$ALIAS_FILE"
 	echo "INFO: New alias 'clean' created in $ALIAS_FILE for running the clean.sh script"
-	echo -e "\t alias clean='$INSTALL_DIR/clean.sh'"
+	echo -e "\t alias clean='$INSTALL_DIR/clean.sh'\n"
 fi
 
 echo -e "SUCCESS: Installation completed"
