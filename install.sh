@@ -125,4 +125,5 @@ if [ $create_alias -eq 1 ]; then
 fi
 
 printf "SUCCESS: Installation completed\n"
-printf "WARNING: Please restart any open shell sessions for the changes to take effect.\n"
+printf "WARNING: Please restart any open shell sessions for the changes to take effect."
+echo ""
