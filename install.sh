@@ -6,12 +6,10 @@ INSTALL_DIR=$HOME/.42cleaner
 # Check if the repository already exists in the home directory
 if [ -d "$REPO_DIR" ]; then
 	read -p "The 42cleaner repository already exists. Do you want to update it? (y/n) " update
-	if [[ $update =~ ^[Yy]$ ]]; then
-		cd "$REPO_DIR"
-		git pull
-	else
-		echo "No changes were made to the repository."
-	fi
+	case $update in
+		[Yy]* ) cd "$REPO_DIR"; git pull; break ;;
+		* ) echo "No changes were made to the repository."; break ;;
+	esac
 else
 	git clone https://github.com/jandrana/42cleaner "$REPO_DIR"
 fi
