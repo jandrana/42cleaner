@@ -641,6 +641,9 @@ if [ "$verbose" -eq 1 ]; then
             echo -e "\t$(print_size_color $(get_path_size $path))\t$path"
         fi
     done
+	if [ "$total_skipped" -eq 0 ]; then
+		echo -e "\t\tNO PATHS SKIPPED"
+	fi
     echo -e "\n\t$(get_size_color "$total_skipped")TOTAL SKIPPED: ${BOLD}$(print_size_color "$total_skipped")"
 fi
 
