@@ -136,62 +136,85 @@ update_color_variables() {
 
 update_color_variables
 
-# Display help message
+# Functions for displaying help message (option -h/--help)
+
+# Print usage example depending on if there is an existing alias or not 
+print_usage() {
+    alias_name=$($SHELL -ic alias | grep "='\$HOME/.42cleaner/clean.sh" | awk -F'=' '{print $1}' )
+    if [ -z "$alias_name" ]; then
+        echo "./clean.sh"
+    else
+        echo "$alias_name"
+    fi
+}
+
 print_help() {
-    repo_path=$(find $HOME -type d -name '42cleaner' -print -quit)
+    repo_path=$(find "$HOME" -type d -name '42cleaner' | sort | awk 'NR==1{print}')
+    clean_cmd=$(print_usage)
     echo -e "${BOLD}DESCRIPTION${NORMAL}"
-    echo -e "\tThis script cleans cache and temporary files for 42 students using Linux/Ubuntu."
-    echo -e "\tIt helps to free up disk space and maintain system performance by removing unnecessary files from various directories."
+    echo -e "\tThis script cleans cache and temporary files in Linux/Ubuntu"
+    echo -e "\tIt helps to free up disk space and maintain system performance"
     echo -e "${BOLD}USAGE${NORMAL}"
-    echo -e "\tclean [options]"
+    echo -e "\t $clean_cmd [options]"
     echo -e "${BOLD}OPTIONS${NORMAL}"
     echo -e "\t-h, --help"
     echo -e "\t\tDisplay this help message."
     echo -e "\t-u, --update"
     echo -e "\t\tUpdate the script from the repository."
     echo -e "\t-v, --verbose"
-    echo -e "\t\tVerbose mode. Show files deleted/to delete and their sizes."
+    echo -e "\t\tVerbose mode."
+    echo -e "\t\tShow files deleted/to delete and their sizes."
     echo -e "\t-n, --dry-run"
-    echo -e "\t\tDry run mode. Only show what would be deleted without actually deleting anything. Enables verbose mode."
+    echo -e "\t\tDry run mode (Also enables verbose mode)"
+    echo -e "\t\tOnly show what would be deleted without actually deleting anything."
     echo -e "\t-i, --interactive"
-    echo -e "\t\tInteractive mode. Ask for confirmation before deleting each file or directory."
+    echo -e "\t\tInteractive mode."
+    echo -e "\t\tAsk for confirmation before deleting each file or directory."
     echo -e "\t-l, --list"
-    echo -e "\t\tList mode. ONLY list all directories and files to be cleaned without deleting."
+    echo -e "\t\tList mode."
+    echo -e "\t\tONLY list all directories and files to be cleaned without deleting."
     echo -e "\t-f, --force"
-    echo -e "\t\tForce mode. Delete cache without asking for confirmation of running processes."
+    echo -e "\t\tForce mode."
+    echo -e "\t\tDelete cache without asking for confirmation of running processes."
     echo -e "\t-s, --safe"
-    echo -e "\t\tSafe mode. Temporarily disables force mode and checks the running processes."
+    echo -e "\t\tSafe mode."
+    echo -e "\t\tTemporarily disables force mode and checks the running processes."
     echo -e "\t-D [mode]"
-    echo -e "\t\tSet default mode of the script to the provided mode (e.g., -D v to enable verbose mode by default)."
+    echo -e "\t\tSet default mode of the script to the provided mode"
+    echo -e "\t\tExample: '$clean_cmd -D v' enables verbose mode by default"
     echo -e "\t-U [mode]"
-    echo -e "\t\tUnset default mode of the script for the provided mode (e.g., -u v to disable verbose mode by default)."
+    echo -e "\t\tUnset default mode of the script for the provided mode"
+    echo -e "\t\tExample: '$clean_cmd -u v' to disable verbose mode by default"
     echo -e "\t-R"
     echo -e "\t\tReset default modes of the script to the original values."
     echo -e "\t--color [${GREEN}true${NORMAL}|${RED}false${NORMAL}]"
-    echo -e "\t\tEnable or disable color output. Valid values are \`true\`, \`1\`, \`false\`, \`0\`."
+    echo -e "\t\tEnable or disable color output."
+    echo -e "\t\tValid values are \`true\`, \`1\`, \`false\`, \`0\`."
     echo -e "\t--set-default-color [${GREEN}true${NORMAL}|${RED}false${NORMAL}]"
-    echo -e "\t\tSet the default color output in the configuration file. Valid values are \`true\`, \`1\`, \`false\`, \`0\`."
+    echo -e "\t\tSet the default color output in the configuration file."
+    echo -e "\t\tValid values are \`true\`, \`1\`, \`false\`, \`0\`."
     echo -e "${BOLD}CONFIGURATION${NORMAL}"
-    echo -e "\tThe script uses a configuration file located at \`$HOME/.42cleaner/clean.conf\` for default settings."
-    echo -e "\tYou can modify this file directly to change the default behavior of the script."
-    echo -e "\tAlternatively, use the \`-D\`, \`-U\`, \`-R\` and \`--set-default-color\` options to configure defaults from the command line."
+    echo -e "\tConfiguration file for modifying the default behaviour of the script"
+    echo -e "\tFile location: \`$HOME/.42cleaner/clean.conf\`."
+    echo -e "\tIn order to modify it you can:"
+    echo -e "\t\t1. Manually modify the file directly"
+    echo -e "\t\t2. Use the following options of $clean_cmd in the command line:"
+    echo -e "\t\t  \`-D\`, \`-U\`, \`-R\` and \`--set-default-color\`"
+    echo -e "\t\tThey allow to change behaviour from the command line."
     echo -e "${BOLD}MORE HELP${NORMAL}"
-    echo -e "\tFor more detailed documentation, please refer to the Documentation files in the repository."
+    echo -e "\tFor more information, please refer to the project's Documentation at:"
     #  Looking for the repository directory in $HOME and print the path if found
     if [ -z  "$repo_path" ]; then
-        echo -e "\tRepository not found locally. You can find the Documentatation files at:"
-        echo -e "\t- clean.sh docs: https://github.com/jandrana/42cleaner/blob/main/docs/CLEAN_SH_DOCS.md"
-        echo -e "\t- clean.conf docs: https://github.com/jandrana/42cleaner/blob/main/docs/CLEAN_CONF_DOCS.md"
-        echo -e "\t- proces_name docs: https://github.com/jandrana/42cleaner/blob/main/docs/PROCESS_NAME_DOCS.md"
+        echo -e "\tRepository not found locally. You can find the Documentation files online"
     else
-        echo -e "\tRepository found at: $repo_path"
-        echo -e "\t- clean.sh docs: $repo_path/docs/CLEAN_SH_DOCS.md"
-        echo -e "\t- clean.conf docs: $repo_path/docs/CLEAN_CONF_DOCS.md"
-        echo -e "\t- proces_name docs: $repo_path/docs/PROCESS_NAME_DOCS.md"
+        echo -e "\tLocally: $repo_path/docs/"
     fi
+    echo -e "\tOnline: https://github.com/jandrana/42cleaner/blob/main/docs"
     echo -e "${BOLD}SEE ALSO${NORMAL}"
-    echo -e "\tRefer to \`clean.conf\`, and \`process_name.sh\` as auxiliary files for additional functionalities "
-    echo -e "\tYou can find these files inside the /utils folder of the repository."
+    echo -e "\tThe /utils folder contains auxiliary files with additional functionalities."
+    echo -e "\tFiles: \`clean.conf\`, \`process_name.sh\` and \`find_cache.sh\`"
+    echo -e "\tFor more details, refer to their specific documentation at /docs"
+    
     
     echo -e "${BOLD}AUTHOR${NORMAL}"
     echo -e "\tDeveloped by: Jandrana"
