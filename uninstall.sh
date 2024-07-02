@@ -26,24 +26,37 @@ case $SHELL in
 		;;
 esac
 
-# Check if the alias exists
-cleaner_alias="='$INSTALL_DIR_BCK/clean.sh'"
-if grep -q $cleaner_alias $ALIAS_FILE; then
-	printf "Alias(es) from 42Cleaner found:\n"
-	printf "$(grep $cleaner_alias $ALIAS_FILE)\n\n"
-	read -p "Do you want to delete them? (y/n) " rem_alias
-	case $rem_alias in
-		[Yy]* )
-			sed -i "/Alias for clean.sh/d" $ALIAS_FILE
-			echo "$cleaner_alias" | while read -r line; do
-				sed -i "\|$line|d" "$ALIAS_FILE"
-			done
-			printf "SUCCESS: Aliases from 42Cleaner removed from $ALIAS_FILE\n\n"
-			;;
-	esac
-else
-	printf "INFO: No alias from 42cleaner found/deleted in $ALIAS_FILE file\n\n"
-fi
+# Check if 42cleaner aliases exists
+clean_aliases() {
+	if grep -q $cleaner_alias $ALIAS_FILE; then
+		printf "Alias(es) for $alias_script found:\n"
+		printf "$(grep $cleaner_alias $ALIAS_FILE)\n\n"
+		read -p "Do you want to delete them? (y/n) " rem_alias
+		case $rem_alias in
+			[Yy]* )
+				sed -i "/Aliases for 42cleaner scripts/d" $ALIAS_FILE
+				echo "$cleaner_alias" | while read -r line; do
+					sed -i "\|$line|d" "$ALIAS_FILE"
+				done
+				printf "SUCCESS: Aliases for $alias_script removed from $ALIAS_FILE\n\n"
+				;;
+		esac
+	else
+		printf "INFO: No alias from $alias_script found/deleted in $ALIAS_FILE file\n\n"
+	fi
+}
+
+alias_scripts=(
+    "clean.sh"
+    "process_name.sh"
+    "find_cache.sh"
+)
+
+for script in "${alias_scripts[@]}"; do
+	alias_script=$script
+	cleaner_alias="='$INSTALL_DIR_BCK/$alias_script'"
+    clean_aliases
+done
 
 printf "SUCCESS: Successfully uninstalled\n"
 printf "WARNING: Please restart any open shell sessions for the changes to take effect.\n"
