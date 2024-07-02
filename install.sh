@@ -32,10 +32,18 @@ chmod +x clean.sh uninstall.sh utils/process_name.sh utils/find_cache.sh
 # Create the .42cleaner directory in the home directory
 mkdir -p "$INSTALL_DIR"
 
-# Copy the clean.sh script to the home directory
+# Copy the clean.sh script to the install directory
 cp clean.sh "$INSTALL_DIR/clean.sh"
 
-# Check if the configuration file exists in the utils directory, if so, copy it to $INSTALL_DIR
+# Copy the auxiliary scripts (if they exist) to the install directory
+if [ ! -f "utils/process_name.sh" ]; then
+	cp utils/process_name.sh "$INSTALL_DIR/process_name.sh"
+fi
+if [ ! -f "utils/find_cache.sh" ]; then
+	cp utils/find_cache.sh "$INSTALL_DIR/find_cache.sh"
+fi
+
+# Copy the configuration file (if it exists) to the install directory
 if [ -f "utils/clean.conf" ]; then
 	cp utils/clean.conf "$INSTALL_DIR"
 fi
