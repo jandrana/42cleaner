@@ -59,16 +59,11 @@ case $SHELL in
 	*)
 		printf "Unknown shell. Please add the following alias manually to your shell configuration file:\n"
 		printf "alias clean='$HOME/clean.sh'\n"
+		printf "alias process_name='$HOME/process_name.sh'\n"
+		printf "alias find_cache='$HOME/find_cache.sh'\n"
 		exit 1
 		;;
 esac
-
-
-# Initialize alias variables
-create_alias=1
-alias_name="clean"
-new_alias="alias $alias_name='$INSTALL_DIR_BCK/clean.sh'"
-cleaner_alias=$(grep "='$INSTALL_DIR_BCK/clean.sh'" $ALIAS_FILE)
 
 # Helper function for managing multiple alias found in $ALIAS_FILE (duplicated aliases)
 manage_duplicate_alias() {
@@ -88,50 +83,75 @@ manage_duplicate_alias() {
 	esac	
 }
 
-# Handles different cases if the alias already exists
-if grep -q "alias $alias_name=" $ALIAS_FILE; then
-	if [ $(grep "='$INSTALL_DIR_BCK/clean.sh'" $ALIAS_FILE | wc -l) -gt 1 ]; then
-		manage_multiple_alias
+create_alias() {
+	# Handles different cases if the alias already exists
+	if grep -q "alias $alias_name=" $ALIAS_FILE; then
+		if [ $(grep "='$INSTALL_DIR_BCK/$alias_script'" $ALIAS_FILE | wc -l) -gt 1 ]; then
+			manage_multiple_alias
+		fi
+		if grep -q "$new_alias" $ALIAS_FILE; then
+			printf " - INFO: Alias '$alias_name' for the \`$alias_script\` already exists. No changes made.\n"
+			create_alias=0
+		elif grep -q "alias $alias_name=" $ALIAS_FILE; then
+			read -p "The alias $alias_name exists but is not for the 42Cleaner. Do you want to overwrite it? (y/n) " overwrite
+			case $overwrite in
+				[Yy]* )
+					sed -i "/alias $alias_name=/d" $ALIAS_FILE
+					;;
+				[Nn]* )
+					read -p "Do you want to use another name for the alias? (y/n) " rename
+					case $rename in
+						[Yy]* )
+							read -p "Enter the new alias name: " new_alias_name
+							alias_name=$new_alias_name
+							new_alias="alias $alias_name='$INSTALL_DIR_BCK/$alias_script'"
+							;;
+						* )
+							create_alias=0
+							printf " - INFO: No alias added for $alias_script. You can add it manually later using: $new_alias\n"
+							;;
+					esac
+					;;
+				* )
+					create_alias=0
+					printf " - INFO: No alias added for $alias_script. You can add it manually later using $new_alias\n"
+					;;
+			esac
+		fi
 	fi
-	if grep -q "$new_alias" $ALIAS_FILE; then
-		printf "INFO: The alias $alias_name for the 42Cleaner already exists. No changes made.\n\n"
-		create_alias=0
-	elif grep -q "alias $alias_name=" $ALIAS_FILE; then
-		read -p "The alias $alias_name exists but is not for the 42Cleaner. Do you want to overwrite it? (y/n) " overwrite
-		case $overwrite in
-			[Yy]* )
-				sed -i "/alias $alias_name=/d" $ALIAS_FILE
-				;;
-			[Nn]* )
-				read -p "Do you want to use another name for the alias? (y/n) " rename
-				case $rename in
-					[Yy]* )
-						read -p "Enter the new alias name: " new_alias_name
-						alias_name=$new_alias_name
-						new_alias="alias $alias_name='$INSTALL_DIR_BCK/clean.sh'"
-						;;
-					* )
-						create_alias=0
-						printf "INFO: No alias added. You can add it manually later using: $new_alias\n\n"
-						;;
-				esac
-				;;
-			* )
-				create_alias=0
-				printf "INFO: No alias added. You can add it manually later using $new_alias\n\n"
-				;;
-		esac
+
+	if [ $create_alias -eq 1 ]; then
+		if [ $num_aliases -eq 0 ]; then
+			sed -i "/Aliases for 42cleaner scripts/d" $ALIAS_FILE
+			echo "# Aliases for 42cleaner scripts (Github: Jandrana)" >> "$ALIAS_FILE"
+		fi
+		num_aliases+=1
+		printf "$new_alias\n" >> "$ALIAS_FILE"
+		printf " - INFO: Created alias '$alias_name' for running \`$alias_script\`\n"
 	fi
+}
+
+aliases=(
+    "clean clean.sh"
+    "process_name process_name.sh"
+    "find_cache find_cache.sh"
+)
+
+# Loop through each pair and call create_alias after initializing variables
+num_aliases=0
+printf "CONFIGURING ALIASES AT: $ALIAS_FILE\n"
+for alias in "${aliases[@]}"; do
+	create_alias=1
+    alias_name=$(echo "$alias" | awk '{print $1}')
+    alias_script=$(echo "$alias" | awk '{print $2}')
+	new_alias="alias $alias_name='$INSTALL_DIR_BCK/$alias_script'"
+	cleaner_alias=$(grep "='$INSTALL_DIR_BCK/$alias_script'" $ALIAS_FILE)
+    create_alias
+done
+if [ $num_aliases -ge 1 ]; then
+	printf " - TIP: You can directly modify the created aliases in the $ALIAS_FILE file\n"
 fi
 
-if [ $create_alias -eq 1 ]; then
-	sed -i "/Alias for clean.sh/d" $ALIAS_FILE
-	echo "# Alias for clean.sh (42cleaner by Jandrana)" >> "$ALIAS_FILE"
-	printf "$new_alias\n" >> "$ALIAS_FILE"
-	printf "INFO: New alias '$alias_name' created in $ALIAS_FILE for running the clean.sh script\n"
-	printf "\t $new_alias\n\n"
-fi
-
-printf "SUCCESS: Installation completed\n"
+printf "\nSUCCESS: Installation completed\n"
 printf "WARNING: Please restart any open shell sessions for the changes to take effect."
 echo ""
