@@ -86,7 +86,6 @@ manage_duplicate_alias() {
 create_alias() {
 	new_alias="alias $alias_name='$INSTALL_DIR_BCK/$alias_script'"
 	cleaner_alias=$(grep "='$INSTALL_DIR_BCK/$alias_script'" "$ALIAS_FILE")
-	printf "$create_alias $alias_name"
 	# Handles different cases if the alias already exists
 	if grep -q "alias $alias_name=" $ALIAS_FILE; then
 		if [ $(grep "='$INSTALL_DIR_BCK/$alias_script'" $ALIAS_FILE | wc -l) -gt 1 ]; then
