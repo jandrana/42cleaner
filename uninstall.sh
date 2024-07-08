@@ -28,13 +28,13 @@ esac
 
 # Check if 42cleaner aliases exists
 clean_aliases() {
-	if grep -q $cleaner_alias $ALIAS_FILE; then
+	if grep -q "$cleaner_alias" "$ALIAS_FILE"; then
 		printf "Alias(es) for $alias_script found:\n"
-		printf "$(grep $cleaner_alias $ALIAS_FILE)\n\n"
+		printf "$(grep "$cleaner_alias" "$ALIAS_FILE")\n\n"
 		read -p "Do you want to delete them? (y/n) " rem_alias
 		case $rem_alias in
 			[Yy]* )
-				sed -i "/Aliases for 42cleaner scripts/d" $ALIAS_FILE
+				sed -i "/Aliases for 42cleaner scripts/d" "$ALIAS_FILE"
 				echo "$cleaner_alias" | while read -r line; do
 					sed -i "\|$line|d" "$ALIAS_FILE"
 				done
@@ -42,19 +42,18 @@ clean_aliases() {
 				;;
 		esac
 	else
-		printf "INFO: No alias from $alias_script found/deleted in $ALIAS_FILE file\n\n"
+		printf "INFO: No alias from $alias_script found in $ALIAS_FILE file\n\n"
 	fi
 }
 
-alias_scripts=(
-    "clean.sh"
-    "process_name.sh"
-    "find_cache.sh"
-)
+alias_scripts="clean.sh process_name.sh find_cache.sh"
 
-for script in "${alias_scripts[@]}"; do
-	alias_script=$script
+set -- $alias_scripts
+
+while [ "$#" -gt 0 ]; do
+	alias_script=$1
 	cleaner_alias="='$INSTALL_DIR_BCK/$alias_script'"
+	shift
     clean_aliases
 done
 
