@@ -683,16 +683,23 @@ if [[ ${#sorted_paths_list[@]} != 0 ]] && [[ -n "${sorted_paths_list[*]}" ]]; th
 fi
 
 # Print heading line before printing paths in verbose and list only mode
-if [ "$verbose" -eq 1 ]; then
-    echo -e "\n${BOLD}${MAGENTA}VERBOSE:${NORMAL}"
-    if [ "$dry_run" -eq 1 ]; then
-        echo -e "\t${BOLD}${MAGENTA}SIZE\tPATH TO DELETE${NORMAL}"
+if [ "$list_only" -eq 1 ]; then
+    echo -e "\n${BOLD}${MAGENTA}LIST ONLY:${NC}"
+    if [[ $need_clean -eq 0 ]]; then
+        echo -e "\t${BOLD}${MAGENTA}NO PATHS TO CLEAN${NC}"
     else
-        echo -e "\t${BOLD}${MAGENTA}FREED\tDELETED${NORMAL}"
+        echo -e "\t${BOLD}${MAGENTA}PATHS TO CLEAN${NC}"
     fi
-elif [ "$list_only" -eq 1 ]; then
-    echo -e "\n${BOLD}${MAGENTA}LIST ONLY:${NORMAL}"
-    echo -e "\t${BOLD}${MAGENTA}PATHS TO CLEAN${NORMAL}"
+elif [ "$verbose" -eq 1 ]; then
+    echo -en "${BOLD}${MAGENTA}VERBOSE SUMMARY:\n\t"
+    if [[ $need_clean -eq 0 ]]; then
+        echo -en "NO PATHS "
+    fi
+    if [ "$dry_run" -eq 1 ]; then
+        echo -e "TO DELETE${NC}"
+    else
+        echo -e "DELETED${NC}"
+    fi
 fi
 
 # Sort final_paths by size
