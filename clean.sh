@@ -453,10 +453,13 @@ clean_paths() {
 
 
 # Array of options to be passed to getopt
-OPTIONS=$(getopt -o hvnilfsD:U:Ru --long help,verbose,dry-run,interactive,list,force,safe,update,color:,set-default-color: -n 'clean' -- "$@")
 
-if [ $? != 0 ]; then
-    echo "Failed to parse options." >&2
+SHORT_OPTIONS='hvnilfsD:U:Ru'
+LONG_OPTIONS='help,verbose,dry-run,interactive,list,force,safe,update,color:,set-default-color:'
+
+# getopt reported failure
+if ! OPTIONS=$(getopt -o $SHORT_OPTIONS --long $LONG_OPTIONS -n "${ERROR}USAGE ERROR${NC}" -- "$@"); then
+    echo -e "Try '$(basename "$0") --help' for more information." 1>&2
     exit 1
 fi
 
