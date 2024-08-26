@@ -59,8 +59,27 @@ DEFAULT_FORCE=0
 DEFAULT_LIST_ONLY=0
 DEFAULT_COLORS=true
 
-### CONFIGURATION FILE ###
-# Update configuration file with new default values
+# SOURCE FILES
+
+if [ -f "$COLOR_FILE" ]; then
+	source "colors.bash"
+else
+    echo -e "ERROR: Could not find $COLOR_FILE file"
+    exit 1
+fi
+
+# shellcheck source="$HOME/.42cleaner/clean.conf"
+if [ -f "$CONFIG_FILE" ]; then
+	source "$CONFIG_FILE"
+fi
+
+# ----------------------------------------------- #
+#                    FUNCTIONS                    #
+# ----------------------------------------------- #
+
+# ---------------- CONFIGURATION FILE ---------------- #
+
+# Update file with default configuration variables values
 update_config_file() {
     echo "DEFAULT_VERBOSE=$DEFAULT_VERBOSE" > "$CONFIG_FILE"
     echo "DEFAULT_DRY_RUN=$DEFAULT_DRY_RUN" >> "$CONFIG_FILE"
