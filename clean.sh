@@ -604,6 +604,26 @@ while true; do
     esac
 done
 
+check_valid_paths() {
+    local empty=1
+    if [[ ${#DEF_PATHS_TO_CLEAN[@]} -ne 0 ]]; then
+        for path in "${!DEF_PATHS_TO_CLEAN[@]}"; do
+            if [[ ! -e $path ]] || [ "$(get_path_size "$path")" -lt $((1024 * 1024)) ]; then
+                DEF_PATHS_TO_CLEAN["$path"]="empty"
+            else
+                empty=0
+            fi
+        done
+    fi
+    if [[ $empty -eq 1 ]]; then
+        echo -e "${WARNING}WARNING:${NC} No paths found in DEF_PATHS_TO_CLEAN array"
+        echo -e "\t Please fill it with valid paths before trying again"
+        exit 1
+    fi
+}
+
+check_valid_paths
+
 # Ensure that safe mode overrides force mode when enabled
 if [ "$safe_mode" -eq 1 ]; then
     force=0
