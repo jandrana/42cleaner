@@ -174,16 +174,17 @@ update_color_variables() {
 
 update_color_variables
 
+# ---------------- HELP MESSAGE FUNCTIONS ---------------- #
 # Functions for displaying help message (option -h/--help)
 
-# Print usage example depending on if there is an existing alias or not 
+# Print usage example depending on if there is an existing alias or not
 print_usage() {
-    alias_name=$($SHELL -ic alias | grep "='\$HOME/.42cleaner/clean.sh" | awk -F'=' '{print $1}' )
-    if [ -z "$alias_name" ]; then
-        echo "./clean.sh"
-    else
-        echo "$alias_name"
-    fi
+	alias_name=$($SHELL -ic alias | grep "='\$HOME/.42cleaner/clean.sh" | awk -F'=' '{print $1}' )
+	if [ -z "$alias_name" ]; then
+		echo "./clean.sh"
+	else
+		echo "$alias_name"
+	fi
 }
 
 print_help() {
