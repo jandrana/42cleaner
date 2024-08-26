@@ -165,27 +165,11 @@ update_script() {
 
 # Update color variables value depending on user configuration
 update_color_variables() {
-    if [ "$colors" == "true" ] || [ "$colors" == "1" ] ; then
-        BOLD=$(tput bold)
-        NORMAL=$(tput sgr0)
-        RED=$(tput setaf 1)
-        GREEN=$(tput setaf 2)
-        YELLOW=$(tput setaf 3)
-        BLUE=$(tput setaf 4)
-        MAGENTA=$(tput setaf 5)
-        CYAN=$(tput setaf 6)
-        WHITE=$(tput setaf 7)
-    else
-        BOLD=""
-        NORMAL=""
-        RED=""
-        GREEN=""
-        YELLOW=""
-        BLUE=""
-        MAGENTA=""
-        CYAN=""
-        WHITE=""
-    fi
+	if [ "$colors" == "true" ] || [ "$colors" == "1" ] && [[ -t 1 ]]; then
+		activate_color
+	else
+		colors=false
+	fi
 }
 
 update_color_variables
