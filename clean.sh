@@ -29,17 +29,27 @@ declare -A DEF_PATHS_TO_CLEAN=(
     # Add more paths to clean here with the same format use "none" as process name if not needed
 )
 
-# Initialize variables
+# ---------------- INIT VARIABLES ---------------- #
+
 CONFIG_FILE="$HOME/.42cleaner/clean.conf"
+COLOR_FILE="$HOME/.42cleaner/colors.bash"
+
+# Space usage variables
 total_freed=0
 total_skipped=0
+process_size=0
+
+# Flags/mode variables
+safe_mode=0
 verbose=0
 dry_run=0
 interactive=0
 list_only=0
 force=0
-safe_mode=0
-process_size=0
+colors=true
+
+# At the end, stays to 1 if there is at least one path != skip/empty
+need_clean=0
 
 # Default configuration values
 DEFAULT_VERBOSE=0
