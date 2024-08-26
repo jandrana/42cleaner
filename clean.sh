@@ -107,25 +107,45 @@ if [ -f "$CONFIG_FILE" ]; then
     list_only=$DEFAULT_LIST_ONLY
     colors=$DEFAULT_COLORS
 else
-    colors=true
     touch "$CONFIG_FILE"
     update_config_file
 fi
 
-### FUNCTIONS ###
+# ---------------- ERROR HANDLER ---------------- #
 
-# Update Script
-update_script() {
-    local repo_dir=$(find $HOME -type d -name '42cleaner' -print -quit)
+put_error() {
+    local type="UNEXPECTED"
+    local name="$2"
+    local arg="$3"
+    local err_msg
 
-    if [ -z "$repo_dir" ]; then
-        echo -e "${RED}Repository directory not found in $HOME.${NORMAL}"
-        echo -e "Please make sure the repository is cloned and called '42cleaner'."
-        exit 1
+    if [[ -n $1 ]]; then type="$1"; fi
+    err_msg="${ERROR}$type ERROR${NC}"
+
+    if [[ $type != "UNEXPECTED" ]]; then
+        if [[ $name == "EXC_FLAG" ]]; then
+            err_msg+=": Too many arguments for exclusive flag"
+        elif [[ $name == "REP_NOTFOUND" ]]; then
+            err_msg+=": Repository directory not found at $HOME"
+            err_msg+="\nPlease make sure the repository is correctly cloned and called '42cleaner'."
+        else
+            err_msg+=": Unexpected error $name"
+        fi
     fi
+    if [[ -n $arg ]]; then err_msg+=" \`$arg\`"; fi
 
-    # Navigate to the repository directory
-    cd "$repo_dir" || exit
+    echo -e "$err_msg"
+    exit 1;
+}
+
+# ---------------- UPDATE FUNCTIONS ---------------- #
+
+update_script() {
+    local repo_dir
+    local local_hash
+    local remote_hash
+
+    repo_dir=$(find "$HOME" -type d -name '42cleaner' -print -quit)
 
     # Fetch the latest changes from the remote repository (to check if the script is up-to-date)
     git fetch
