@@ -616,9 +616,7 @@ check_valid_paths() {
         done
     fi
     if [[ $empty -eq 1 ]]; then
-        echo -e "${NOTE}NOTE:${NC} No paths found for cleaning"
-		echo -e "Total available space: ${BOLD}$(get_storage_usage)${NC}"
-        exit 1
+        echo -e "${NOTE}NOTE:${NC} No paths found for cleaning\n"
     fi
 }
 
@@ -729,7 +727,7 @@ if [ "$verbose" -eq 1 ]; then
         fi
     done
     else
-        echo -e "\n\t${NOTE}\tSKIPPED${NC}"
+        echo -e "\n\t${NOTE}SKIPPED${NC}"
     fi
     for path in "${sorted_all_paths[@]}"; do
         if [[ -n "${DEF_PATHS_TO_CLEAN[*]}" ]] && [ "${DEF_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
@@ -738,7 +736,7 @@ if [ "$verbose" -eq 1 ]; then
         fi
     done
 	if [ "$total_skipped" -eq 0 ]; then
-		echo -e "\t\tPATHS SMALLER THAN 1MB\n" # fixme NOT WORKING VERBOSE SKIPPED LIST (tested with flags -ni)
+		echo -e "\tPATHS SMALLER THAN 1MB\n" # fixme NOT WORKING VERBOSE SKIPPED LIST (tested with flags -ni)
     else
         echo -e "\n\t$(get_size_color "$total_skipped")TOTAL SKIPPED: ${BOLD}$(print_size_color "$total_skipped")"
     fi
