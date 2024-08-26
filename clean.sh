@@ -163,13 +163,6 @@ update_script() {
 	fi
 }
 
-        # Copy the updated script to $HOME
-        cp clean.sh $HOME/.42cleaner/clean.sh
-        echo -e "${GREEN}Script updated successfully from the repository.${NORMAL}"
-    fi
-    exit 0
-}
-
 # Update color variables value depending on user configuration
 update_color_variables() {
     if [ "$colors" == "true" ] || [ "$colors" == "1" ] ; then
