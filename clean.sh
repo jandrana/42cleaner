@@ -281,29 +281,36 @@ get_size_color() {
 
 # Print given size in a readable format with color
 print_size_color() {
-    local size=$1
-    local size_color=$(get_size_color "$size")
-    echo -e "${size_color}$(numfmt --to=iec --suffix=B "$size")${NORMAL}"
+	local size=$1
+	local size_color
+
+	size_color=$(get_size_color "$size")
+	echo -e "${size_color}$(numfmt --to=iec --suffix=B "$size")${NC}"
+}
+
+print_size() {
+	local size=$1
+	echo -e "${BOLD}$(numfmt --to=iec --suffix=B "$size")${NC}"
 }
 
 # Get storage usage of home directory in a readable format
 get_storage_usage() {
-    df -h "$HOME" | awk 'NR==2 {print $4}'
+	df -h "$HOME" | awk 'NR==2 {print $4}'
 }
 
 # Print storage usage of home directory
 print_storage_usage() {
-    echo -e "\tAvailable space in $HOME: ${BOLD}$(get_storage_usage)${NORMAL}"
+	echo -e "\tAvailable space in $HOME: ${BOLD}$(get_storage_usage)${NC}"
 }
 
 # Function to get the size of a given path
 get_path_size() {
-    local path=$1
-    if [ -e "$path" ]; then
-        du -sb "$path" | awk '{print $1}'
-    else
-        echo 0
-    fi
+	local path=$1
+	if [ -e "$path" ]; then
+		du -sb "$path" | awk '{print $1}'
+	else
+		echo 0
+	fi
 }
 
 # Function to sort and print an array of paths by their size from biggest to smallest
