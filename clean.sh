@@ -702,17 +702,16 @@ elif [ "$verbose" -eq 1 ]; then
     fi
 fi
 
-# Sort final_paths by size
-sorted_paths_list=($(sort_paths_by_size "${final_paths_to_clean[@]}"))
-
 # Clean paths in sorted order or list in list_only mode
-for path in "${sorted_paths_list[@]}"; do
-    if [ "$list_only" -eq 1 ]; then
-        echo -e "\t$(print_size_color $(get_path_size $path))\t$path"
-    else
-        clean_paths "$path"
-    fi
-done
+if [ $need_clean -eq 1 ]; then
+    for path in "${sorted_paths_list[@]}"; do
+        if [ "$list_only" -eq 1 ] && [[ -e $path ]]; then
+            echo -e "\t$(print_size_color "$(get_path_size "$path")")${NC}\t$path"
+        else
+            clean_paths "$path"
+        fi
+    done
+fi
 
 # List skipped (not cleaned) paths in verbose mode + total size of skipped paths
 # Skipped paths are those that have been marked as "skip":
