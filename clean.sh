@@ -349,62 +349,88 @@ sort_paths_by_size() {
     printf "%s\n" "${sorted_paths[@]}"
 }
 
+
+get_process_decision() {
+	local proc_msg
+	if [[ ${#running_processes[@]} != 0 ]]; then
+		echo -en "${WARNING}SAFE MODE:${NC}"
+		echo -e " It is recommended to close ${WARNING}${!running_processes[*]}${NC} before cleaning cache"
+	fi
+	for process in "${!running_processes[@]}"; do
+		process_size=0
+		if [ -z "${process_decision[$process]}" ]; then
+			echo -e "${WARNING}   - $process${NC}${NC} is running: It is recommended to close it before cleaning its cache.${NC}"
+			IFS=';' read -ra paths <<< "${running_processes[$process]}"
+			for path in "${paths[@]}"; do
+				path_size=$(get_path_size "$path")
+				process_size=$((process_size + path_size))
+			done
+			# echo -e "\t${BOLD}SIZE\tPROCESS PATHS"
+			print_paths_sorted "\t" "${paths[@]}"
+			proc_msg="(${BOLD}TOTAL${NC}=$(print_size_color "$process_size"))"
+			while true; do
+				read -r -p "	 Do you want to delete paths related to ${BOLD}$process${NC}? $proc_msg (y/n) " yn
+				case $yn in
+					[Yy]* ) process_decision["$process"]="yes"; break ;;
+					[Nn]* ) process_decision["$process"]="no"; break ;;
+					* ) echo "Please answer yes or no." ;;
+				esac
+			done
+		fi
+	done
+}
+
+assign_process_decision() {
+	local skipping
+	local cleaning
+	for process in "${!running_processes[@]}"; do
+		if [ "${process_decision[$process]}" == "no" ]; then
+			IFS=';' read -ra paths <<< "${running_processes[$process]}"
+			for path in "${paths[@]}"; do
+				DEF_PATHS_TO_CLEAN["$path"]="skip"
+			done
+			skipping+="$process "
+		else
+			IFS=';' read -ra paths <<< "${running_processes[$process]}"
+			for path in "${paths[@]}"; do
+				DEF_PATHS_TO_CLEAN["$path"]="delete"
+			done
+			cleaning+="$process "
+		fi
+	done
+	if [[ ${#running_processes[@]} != 0 ]]; then
+		echo -en "${BORANGE}SUMMARY: ${NC}"
+		if [[ -n $skipping ]]; then
+			echo -en "Skipping ${RED}$skipping${NC}"
+		fi
+		if [[ -n $cleaning ]]; then
+			echo -en "Cleaning ${GREEN}$cleaning${NC}"
+		fi
+		echo -e "\n"
+	fi
+}
+
 # Function to handle processes that are running and want to be cleaned
 check_running_process() {
-    declare -A running_processes
-    declare -A process_decision
+	declare -A process_decision
+	declare -A running_processes
 
-    echo -e "\n${YELLOW}${BOLD}Checking for running processes...${NORMAL}"
-    for path in "${!DEF_PATHS_TO_CLEAN[@]}"; do
-        # skip paths that are already marked to be skipped
-        if [ "${DEF_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
-            continue
-        fi
-        process="${DEF_PATHS_TO_CLEAN[$path]}"
-        if [ "$process" != "none" ] && pgrep -x "$process" > /dev/null; then
-            if [ -z "${running_processes[$process]}" ]; then
-                running_processes["$process"]="$path"
-            else
-                running_processes["$process"]+=";$path"
-            fi
-        fi
-    done
-
-    for process in "${!running_processes[@]}"; do
-        process_size=0
-        if [ -z "${process_decision[$process]}" ]; then
-            echo -e "\n${BOLD}${RED}Warning:${NORMAL}${BOLD} $process${NORMAL} is running.\nIt is recommended to close this application before cleaning its cache.${NORMAL}"
-            echo -e "${BOLD}SIZE\tPROCESS PATHS${NORMAL}"
-            IFS=';' read -ra paths <<< "${running_processes[$process]}"
-            print_paths_sorted "${paths[@]}"
-            for path in "${paths[@]}"; do
-                path_size=$(get_path_size "$path")
-                process_size=$((process_size + path_size))
-            done
-            echo -e "\n$(get_size_color "$process_size")TOTAL $process:${NORMAL}${YELLOW} $(print_size_color "$process_size")\n"
-            while true; do
-                read -p "Do you want to proceed with cleaning cache for $process? (y/n) " yn
-                case $yn in
-                    [Yy]* ) process_decision["$process"]="yes"; break ;;
-                    [Nn]* ) process_decision["$process"]="no"; break ;;
-                    * ) echo "Please answer yes or no." ;;
-                esac
-            done
-        fi
-    done
-
-    for process in "${!running_processes[@]}"; do
-        if [ "${process_decision[$process]}" == "no" ]; then
-            IFS=';' read -ra paths <<< "${running_processes[$process]}"
-            for path in "${paths[@]}"; do
-                DEF_PATHS_TO_CLEAN["$path"]="skip"
-            done
-            echo -e "${RED}Skipping cleaning for paths with: $process process${NORMAL}"
-        else
-            echo -e "${GREEN}Cleaning cache for paths with: $process process${NORMAL}"
-        fi
-    done
-    return 0
+	for path in "${!DEF_PATHS_TO_CLEAN[@]}"; do
+		if [ "${DEF_PATHS_TO_CLEAN[$path]}" == "skip" ] || [ "${DEF_PATHS_TO_CLEAN[$path]}" == "empty" ]; then
+			continue
+		fi
+		process="${DEF_PATHS_TO_CLEAN[$path]}"
+		if [ "$process" != "none" ] && pgrep -x "$process" > /dev/null; then
+			if [ -z "${running_processes[$process]}" ]; then
+				running_processes["$process"]="$path"
+			else
+				running_processes["$process"]+=";$path"
+			fi
+		fi
+	done
+	get_process_decision
+	assign_process_decision
+	return 0
 }
 
 # Function to delete files and folders and calculate freed space
