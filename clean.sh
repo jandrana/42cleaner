@@ -190,12 +190,12 @@ print_usage() {
 print_help() {
     repo_path=$(find "$HOME" -type d -name '42cleaner' | sort | awk 'NR==1{print}')
     clean_cmd=$(print_usage)
-    echo -e "${BOLD}DESCRIPTION${NORMAL}"
+    echo -e "${BOLD}DESCRIPTION${NC}"
     echo -e "\tThis script cleans cache and temporary files in Linux/Ubuntu"
     echo -e "\tIt helps to free up disk space and maintain system performance"
-    echo -e "${BOLD}USAGE${NORMAL}"
+    echo -e "${BOLD}USAGE${NC}"
     echo -e "\t $clean_cmd [options]"
-    echo -e "${BOLD}OPTIONS${NORMAL}"
+    echo -e "${BOLD}OPTIONS${NC}"
     echo -e "\t-h, --help"
     echo -e "\t\tDisplay this help message."
     echo -e "\t-u, --update"
@@ -226,13 +226,13 @@ print_help() {
     echo -e "\t\tExample: '$clean_cmd -u v' to disable verbose mode by default"
     echo -e "\t-R"
     echo -e "\t\tReset default modes of the script to the original values."
-    echo -e "\t--color [${GREEN}true${NORMAL}|${RED}false${NORMAL}]"
+    echo -e "\t--color [${GREEN}true${NC}|${RED}false${NC}]"
     echo -e "\t\tEnable or disable color output."
     echo -e "\t\tValid values are \`true\`, \`1\`, \`false\`, \`0\`."
-    echo -e "\t--set-default-color [${GREEN}true${NORMAL}|${RED}false${NORMAL}]"
+    echo -e "\t--set-default-color [${GREEN}true${NC}|${RED}false${NC}]"
     echo -e "\t\tSet the default color output in the configuration file."
     echo -e "\t\tValid values are \`true\`, \`1\`, \`false\`, \`0\`."
-    echo -e "${BOLD}CONFIGURATION${NORMAL}"
+    echo -e "${BOLD}CONFIGURATION${NC}"
     echo -e "\tConfiguration file for modifying the default behaviour of the script"
     echo -e "\tFile location: \`$HOME/.42cleaner/clean.conf\`."
     echo -e "\tIn order to modify it you can:"
@@ -240,7 +240,7 @@ print_help() {
     echo -e "\t\t2. Use the following options of $clean_cmd in the command line:"
     echo -e "\t\t  \`-D\`, \`-U\`, \`-R\` and \`--set-default-color\`"
     echo -e "\t\tThey allow to change behaviour from the command line."
-    echo -e "${BOLD}MORE HELP${NORMAL}"
+    echo -e "${BOLD}MORE HELP${NC}"
     echo -e "\tFor more information, please refer to the project's Documentation at:"
     #  Looking for the repository directory in $HOME and print the path if found
     if [ -z  "$repo_path" ]; then
