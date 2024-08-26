@@ -749,12 +749,21 @@ total_freed_read=$(print_size_color "$total_freed")
 
 # Print total freed space and home storage available before/after cleaning
 if [ "$list_only" -eq 0 ]; then
-    echo -e "\t$(get_size_color "$total_freed")TOTAL CLEAN: ${BOLD}$total_freed_read\n"
-    echo -ne "${RED}${BOLD}BEFORE: ${NORMAL}"
-    echo -e "Available space in $HOME: ${BOLD}${before_cleaning}${NORMAL}"
-    echo -ne "${GREEN}${BOLD}AFTER:${NORMAL}"
-    print_storage_usage
-else
-    echo -e "\n $(print_storage_usage)"
+    if [ $total_freed -ne 0 ]; then
+        echo -e "\t$(get_size_color "$total_freed")TOTAL CLEAN: ${BOLD}$total_freed_read\n"
+        echo -en "Total available space:"
+        if [ "$before_cleaning" != "$(get_storage_usage)" ]; then
+            echo -e "\n\t${ERROR}BEFORE: ${NC}${before_cleaning}${NC}"
+            echo -ne "\t${BGREEN}AFTER: ${NC}"
+        fi
+    fi
 fi
-echo -e "${NORMAL}"
+
+if [ $total_freed -eq 0 ] || [ "$list_only" -eq 1 ]; then
+    echo -en "\n Total available space:"
+fi
+echo -e " ${BOLD}$(get_storage_usage)\n${NC}"
+
+if [ $dry_run -eq 1 ] && [ $list_only -eq 0 ]; then
+	echo -e "${BRED}DRY-RUN:${NC} END OF SIMULATION. NO FILES WERE DELETED"
+fi
