@@ -719,23 +719,29 @@ fi
 #   - Paths that had a process running and user chose not to clean
 #   - Paths that user chose not to clean in interactive mode
 # - Paths that which size is less than 1KB
-sorted_all_paths=($(sort_paths_by_size "${!DEF_PATHS_TO_CLEAN[@]}"))
+mapfile -t sorted_all_paths < <(sort_paths_by_size "${!DEF_PATHS_TO_CLEAN[@]}")
 if [ "$verbose" -eq 1 ]; then
     if [ "$list_only" -eq 1 ]; then
-        echo -e "\n\t${BOLD}${MAGENTA}IGNORED PATHS FOR SIZE (< 1KB)${NORMAL}"
+        echo -e "\n\t${BOLD}${MAGENTA}IGNORED PATHS < 1M${NC}"
+        for path in "${sorted_all_paths[@]}"; do
+        if [ "${DEF_PATHS_TO_CLEAN[$path]}" == "empty" ]; then
+            DEF_PATHS_TO_CLEAN[$path]="skip"
+        fi
+    done
     else
-        echo -e "\n\t${RED}${BOLD}SIZE\tSKIPPED${NORMAL}"
+        echo -e "\n\t${NOTE}\tSKIPPED${NC}"
     fi
     for path in "${sorted_all_paths[@]}"; do
-        if [ "${DEF_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
-            total_skipped=$((total_skipped + $(get_path_size $path)))
-            echo -e "\t$(print_size_color $(get_path_size $path))\t$path"
+        if [[ -n "${DEF_PATHS_TO_CLEAN[*]}" ]] && [ "${DEF_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
+            total_skipped=$((total_skipped + $(get_path_size "$path")))
+            echo -e "\t$(print_size_color "$(get_path_size "$path")")${NC}\t$path"
         fi
     done
 	if [ "$total_skipped" -eq 0 ]; then
-		echo -e "\t\tNO PATHS SKIPPED"
-	fi
-    echo -e "\n\t$(get_size_color "$total_skipped")TOTAL SKIPPED: ${BOLD}$(print_size_color "$total_skipped")"
+		echo -e "\t\tPATHS SMALLER THAN 1MB\n" # fixme NOT WORKING VERBOSE SKIPPED LIST (tested with flags -ni)
+    else
+        echo -e "\n\t$(get_size_color "$total_skipped")TOTAL SKIPPED: ${BOLD}$(print_size_color "$total_skipped")"
+    fi
 fi
 
 # Convert total freed to readable format
