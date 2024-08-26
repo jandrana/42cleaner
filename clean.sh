@@ -52,6 +52,7 @@ colors=true
 need_clean=0
 
 # Default configuration values
+DEFAULT_SAFE=1 # fixme reconsider this default value (makes -f not work) or delete condition where -s --> force=0
 DEFAULT_VERBOSE=0
 DEFAULT_DRY_RUN=0
 DEFAULT_INTERACTIVE=0
@@ -94,11 +95,11 @@ update_config_file() {
 
 # Load defaults from configuration file if it exists or create it with default values
 CONFIG_DIR=$(dirname "$CONFIG_FILE")
-if [ ! -d "$CONFIG_DIR" ]; then
-    mkdir -p "$CONFIG_DIR"
-fi
+mkdir -p "$CONFIG_DIR"
+
 if [ -f "$CONFIG_FILE" ]; then
     source "$CONFIG_FILE"
+    safe_mode=$DEFAULT_SAFE
     verbose=$DEFAULT_VERBOSE
     dry_run=$DEFAULT_DRY_RUN
     interactive=$DEFAULT_INTERACTIVE
