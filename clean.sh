@@ -315,23 +315,16 @@ get_path_size() {
 
 # Function to sort and print an array of paths by their size from biggest to smallest
 print_paths_sorted() {
-    local paths=("$@")
-    declare -A path_sizes
+	local indent="$1"
+	shift
+	local paths=("$@")
+	local sorted
 
-    # Calculate sizes of paths
-    for path in "${paths[@]}"; do
-        path_sizes["$path"]="$(get_path_size "$path")"
-    done
-
-    # Sort paths by size
-    sorted_paths=($(for path in "${!path_sizes[@]}"; do
-        echo "${path_sizes[$path]} $path"
-    done | sort -nr | awk '{print $2}'))
-
-    # Print sorted paths with their sizes
-    for path in "${sorted_paths[@]}"; do
-        echo -e "$(print_size_color $(get_path_size "$path"))\t$path"
-    done
+	# Print sorted paths with their sizes
+	mapfile -t sorted < <(sort_paths_by_size "${paths[@]}")
+	for path in "${sorted[@]}"; do
+		echo -e "$indent$(print_size "$(get_path_size "$path")")\t$path"
+	done
 }
 
 # Function to return an array after sorting given array of paths by their size from biggest to smallest
