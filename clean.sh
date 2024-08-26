@@ -435,18 +435,20 @@ check_running_process() {
 
 # Function to delete files and folders and calculate freed space
 clean_paths() {
-    local path=$1
-    if [ -e "$path" ]; then
-        local path_size_before=$(get_path_size "$path")
-        if [ "$dry_run" -eq 0 ]; then
-            rm -rf "$path"
-        fi
-        total_freed=$((total_freed + path_size_before))
+	local path=$1
+	local path_size_before
 
-        if [ "$verbose" -eq 1 ] && [ "$path_size_before" -gt 0 ]; then
-            echo -e "\t$(print_size_color "$path_size_before")\t$path"
-        fi
-    fi
+	if [ -e "$path" ]; then
+		path_size_before=$(get_path_size "$path")
+		if [ "$dry_run" -eq 0 ]; then
+			rm -rf "$path"
+		fi
+		total_freed=$((total_freed + $path_size_before))
+
+		if [ "$verbose" -eq 1 ] && [ "$path_size_before" -gt 0 ]; then
+			echo -e "\t$(print_size_color "$path_size_before")\t$path"
+		fi
+	fi
 }
 
 
