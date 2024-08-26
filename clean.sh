@@ -629,12 +629,10 @@ if [ "$safe_mode" -eq 1 ]; then
     force=0
 fi
 
-# Skip cleaning of paths that are less than 1KB
-for path in "${PATHS_TO_CLEAN[@]}"; do
-    if [ $(get_path_size "$path") -lt $((1024)) ]; then
-        DEF_PATHS_TO_CLEAN["$path"]="skip"
-    fi
-done
+if [ "$dry_run" -eq 1 ] && [ "$list_only" -eq 0 ]; then
+    verbose=1
+    echo -e "${BRED}DRY-RUN:${NC} SIMULATION MODE ACTIVE. NO FILES WILL BE DELETED${RESET}\n"
+fi
 
 # Print the current storage available of home directory
 if [ "$list_only" -eq 0 ]; then
@@ -642,7 +640,6 @@ if [ "$list_only" -eq 0 ]; then
     if [ "$force" -eq 0 ]; then
         check_running_process
     fi
-    echo -e "\nSTARTING CLEANING PROCESS"
 else
     interactive=0
 fi
