@@ -141,23 +141,27 @@ put_error() {
 # ---------------- UPDATE FUNCTIONS ---------------- #
 
 update_script() {
-    local repo_dir
-    local local_hash
-    local remote_hash
+	local repo_dir
+	local local_hash
+	local remote_hash
 
-    repo_dir=$(find "$HOME" -type d -name '42cleaner' -print -quit)
+	repo_dir=$(find "$HOME" -type d -name '42cleaner' -print -quit)
 
-    # Fetch the latest changes from the remote repository (to check if the script is up-to-date)
-    git fetch
+	if [ -z "$repo_dir" ]; then put_error "UPDATE" "REP_NOTFOUND"; fi
+	cd "$repo_dir" || exit
+	git fetch
 
-    # Compare the local and remote hashes and act accordingly
-    local local_hash=$(git rev-parse HEAD)
-    local remote_hash=$(git rev-parse @{u})
-    if [ "$local_hash" == "$remote_hash" ]; then
-        echo -e "${GREEN}The script is already up-to-date.${NORMAL}"
-    else
-        # Pull the latest changes
-        git pull origin main
+	# Compare the local and remote hashes (check if is up-to-date)
+	local_hash=$(git rev-parse HEAD)
+	remote_hash=$(git rev-parse @{u})
+	if [ "$local_hash" == "$remote_hash" ]; then
+		echo -e "${GREEN}The script is already up-to-date.${NC}"
+	else
+		git pull origin main
+		cp clean.sh "$HOME"/.42cleaner/clean.sh
+		echo -e "${GREEN}Script updated successfully from the repository.${NC}"
+	fi
+}
 
         # Copy the updated script to $HOME
         cp clean.sh $HOME/.42cleaner/clean.sh
