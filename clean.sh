@@ -188,98 +188,95 @@ print_usage() {
 }
 
 print_help() {
-    repo_path=$(find "$HOME" -type d -name '42cleaner' | sort | awk 'NR==1{print}')
-    clean_cmd=$(print_usage)
-    echo -e "${BOLD}DESCRIPTION${NC}"
-    echo -e "\tThis script cleans cache and temporary files in Linux/Ubuntu"
-    echo -e "\tIt helps to free up disk space and maintain system performance"
-    echo -e "${BOLD}USAGE${NC}"
-    echo -e "\t $clean_cmd [options]"
-    echo -e "${BOLD}OPTIONS${NC}"
-    echo -e "\t-h, --help"
-    echo -e "\t\tDisplay this help message."
-    echo -e "\t-u, --update"
-    echo -e "\t\tUpdate the script from the repository."
-    echo -e "\t-v, --verbose"
-    echo -e "\t\tVerbose mode."
-    echo -e "\t\tShow files deleted/to delete and their sizes."
-    echo -e "\t-n, --dry-run"
-    echo -e "\t\tDry run mode (Also enables verbose mode)"
-    echo -e "\t\tOnly show what would be deleted without actually deleting anything."
-    echo -e "\t-i, --interactive"
-    echo -e "\t\tInteractive mode."
-    echo -e "\t\tAsk for confirmation before deleting each file or directory."
-    echo -e "\t-l, --list"
-    echo -e "\t\tList mode."
-    echo -e "\t\tONLY list all directories and files to be cleaned without deleting."
-    echo -e "\t-f, --force"
-    echo -e "\t\tForce mode."
-    echo -e "\t\tDelete cache without asking for confirmation of running processes."
-    echo -e "\t-s, --safe"
-    echo -e "\t\tSafe mode."
-    echo -e "\t\tTemporarily disables force mode and checks the running processes."
-    echo -e "\t-D [mode]"
-    echo -e "\t\tSet default mode of the script to the provided mode"
-    echo -e "\t\tExample: '$clean_cmd -D v' enables verbose mode by default"
-    echo -e "\t-U [mode]"
-    echo -e "\t\tUnset default mode of the script for the provided mode"
-    echo -e "\t\tExample: '$clean_cmd -u v' to disable verbose mode by default"
-    echo -e "\t-R"
-    echo -e "\t\tReset default modes of the script to the original values."
-    echo -e "\t--color [${GREEN}true${NC}|${RED}false${NC}]"
-    echo -e "\t\tEnable or disable color output."
-    echo -e "\t\tValid values are \`true\`, \`1\`, \`false\`, \`0\`."
-    echo -e "\t--set-default-color [${GREEN}true${NC}|${RED}false${NC}]"
-    echo -e "\t\tSet the default color output in the configuration file."
-    echo -e "\t\tValid values are \`true\`, \`1\`, \`false\`, \`0\`."
-    echo -e "${BOLD}CONFIGURATION${NC}"
-    echo -e "\tConfiguration file for modifying the default behaviour of the script"
-    echo -e "\tFile location: \`$HOME/.42cleaner/clean.conf\`."
-    echo -e "\tIn order to modify it you can:"
-    echo -e "\t\t1. Manually modify the file directly"
-    echo -e "\t\t2. Use the following options of $clean_cmd in the command line:"
-    echo -e "\t\t  \`-D\`, \`-U\`, \`-R\` and \`--set-default-color\`"
-    echo -e "\t\tThey allow to change behaviour from the command line."
-    echo -e "${BOLD}MORE HELP${NC}"
-    echo -e "\tFor more information, please refer to the project's Documentation at:"
-    #  Looking for the repository directory in $HOME and print the path if found
-    if [ -z  "$repo_path" ]; then
-        echo -e "\tRepository not found locally. You can find the Documentation files online"
-    else
-        echo -e "\tLocally: $repo_path/docs/"
-    fi
-    echo -e "\tOnline: https://github.com/jandrana/42cleaner/blob/main/docs"
-    echo -e "${BOLD}SEE ALSO${NC}"
-    echo -e "\tThe /utils folder contains auxiliary files with additional functionalities."
-    echo -e "\tFiles: \`clean.conf\`, \`process_name.sh\` and \`find_cache.sh\`"
-    echo -e "\tFor more details, refer to their specific documentation at /docs"
-    
-    
-    echo -e "${BOLD}AUTHOR${NC}"
-    echo -e "\tDeveloped by: Jandrana"
-    echo -e "\t      GitHub: https://github.com/jandrana"
-    echo -e "\t     42 user: ana-cast"
-    
-    echo -e "${BOLD}COPYRIGHT${NC}"
-    echo -e "\tThis project is licensed under the MIT License."
+	repo_path=$(find "$HOME" -type d -name '42cleaner' | sort | awk 'NR==1{print}')
+	clean_cmd=$(print_usage)
+	echo -e "${BOLD}DESCRIPTION${NC}"
+	echo -e "\tThis script cleans cache and temporary files in Linux/Ubuntu"
+	echo -e "\tIt helps to free up disk space and maintain system performance"
+	echo -e "${BOLD}USAGE${NC}"
+	echo -e "\t $clean_cmd [options]"
+	echo -e "${BOLD}OPTIONS${NC}"
+	echo -e "\t-h, --help"
+	echo -e "\t\tDisplay this help message."
+	echo -e "\t-u, --update"
+	echo -e "\t\tUpdate the script from the repository."
+	echo -e "\t-v, --verbose"
+	echo -e "\t\tVerbose mode."
+	echo -e "\t\tShow files deleted/to delete and their sizes."
+	echo -e "\t-n, --dry-run"
+	echo -e "\t\tDry run mode (Also enables verbose mode)"
+	echo -e "\t\tOnly show what would be deleted without actually deleting anything."
+	echo -e "\t-i, --interactive"
+	echo -e "\t\tInteractive mode."
+	echo -e "\t\tAsk for confirmation before deleting each file or directory."
+	echo -e "\t-l, --list"
+	echo -e "\t\tList mode."
+	echo -e "\t\tONLY list all directories and files to be cleaned without deleting."
+	echo -e "\t-f, --force"
+	echo -e "\t\tForce mode."
+	echo -e "\t\tDelete cache without asking for confirmation of running processes."
+	echo -e "\t-s, --safe"
+	echo -e "\t\tSafe mode."
+	echo -e "\t\tTemporarily disables force mode and checks the running processes."
+	echo -e "\t-D [mode]"
+	echo -e "\t\tSet default mode of the script to the provided mode"
+	echo -e "\t\tExample: '$clean_cmd -D v' enables verbose mode by default"
+	echo -e "\t-U [mode]"
+	echo -e "\t\tUnset default mode of the script for the provided mode"
+	echo -e "\t\tExample: '$clean_cmd -u v' to disable verbose mode by default"
+	echo -e "\t-R"
+	echo -e "\t\tReset default modes of the script to the original values."
+	echo -e "\t--color [${GREEN}true${NC}|${RED}false${NC}]"
+	echo -e "\t\tEnable or disable color output."
+	echo -e "\t\tValid values are \`true\`, \`1\`, \`false\`, \`0\`."
+	echo -e "\t--set-default-color [${GREEN}true${NC}|${RED}false${NC}]"
+	echo -e "\t\tSet the default color output in the configuration file."
+	echo -e "\t\tValid values are \`true\`, \`1\`, \`false\`, \`0\`."
+	echo -e "${BOLD}CONFIGURATION${NC}"
+	echo -e "\tConfiguration file for modifying the default behaviour of the script"
+	echo -e "\tFile location: \`$HOME/.42cleaner/clean.conf\`."
+	echo -e "\tIn order to modify it you can:"
+	echo -e "\t\t1. Manually modify the file directly"
+	echo -e "\t\t2. Use the following options of $clean_cmd in the command line:"
+	echo -e "\t\t  \`-D\`, \`-U\`, \`-R\` and \`--set-default-color\`"
+	echo -e "\t\tThey allow to change behaviour from the command line."
+	echo -e "${BOLD}MORE HELP${NC}"
+	echo -e "\tFor more information, please refer to the project's Documentation at:"
+	#  Looking for the repository directory in $HOME and print the path if found
+	if [ -z  "$repo_path" ]; then
+		echo -e "\tRepository not found locally. You can find the Documentation files online"
+	else
+		echo -e "\tLocally: $repo_path/docs/"
+	fi
+	echo -e "\tOnline: https://github.com/jandrana/42cleaner/blob/main/docs"
+	echo -e "${BOLD}SEE ALSO${NC}"
+	echo -e "\tThe /utils folder contains auxiliary files with additional functionalities."
+	echo -e "\tFiles: \`clean.conf\`, \`process_name.sh\` and \`find_cache.sh\`"
+	echo -e "\tFor more details, refer to their specific documentation at /docs"
+
+	echo -e "${BOLD}AUTHOR${NC}"
+	echo -e "\tDeveloped by: Jandrana"
+	echo -e "\t      GitHub: https://github.com/jandrana"
+	echo -e "\t     42 user: ana-cast"
+
+	echo -e "${BOLD}COPYRIGHT${NC}"
+	echo -e "\tThis project is licensed under the MIT License."
 }
 
+# ---------------- STORAGE/SIZE RELATED FUNCTIONS ---------------- #
 
+# Calculate color output depending on given number of bytes (size)
 get_size_color() {
-    local size=$1
-    # files smaller than 1MB
-    if [ "$size" -lt $((1024 * 1024)) ]; then
-        echo "${BLUE}"
-    # files smaller than 50MB
-    elif [ "$size" -lt $((50 * 1024 * 1024)) ]; then
-        echo "${GREEN}"
-    # files smaller than 100MB
-    elif [ "$size" -lt $((100 * 1024 * 1024)) ]; then
-        echo "${RED}"
-    # files bigger than 100MB
-    else
-        echo "${MAGENTA}"
-    fi
+	local size=$1
+	if [ "$size" -lt $((1024 * 1024)) ]; then # < 1MB
+		echo "${BLUE}"
+	elif [ "$size" -lt $((50 * 1024 * 1024)) ]; then # 1MB-50MB
+		echo "${GREEN}"
+	elif [ "$size" -lt $((100 * 1024 * 1024)) ]; then # 50MB-100MB
+		echo "${RED}"
+	else # > 100MB
+		echo "${MAGENTA}"
+	fi
 }
 
 # Print given size in a readable format with color
