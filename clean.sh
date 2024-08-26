@@ -649,13 +649,17 @@ fi
 #  - Ask for confirmation before adding path to final_paths (want to delete?)
 #  - Yes: add path to the final paths to clean
 #  - No: mark path as "skip" in DEF_PATHS_TO_CLEAN
+if [ $interactive -eq 1 ]; then
+	echo -e "${NOTE}INTERACTIVE MODE:${NC} Please indicate which paths you want to delete:"
+fi
 for path in "${!DEF_PATHS_TO_CLEAN[@]}"; do
-    if [ "${DEF_PATHS_TO_CLEAN[$path]}" == "skip" ]; then
+    if [ "${DEF_PATHS_TO_CLEAN[$path]}" == "skip" ] || [ "${DEF_PATHS_TO_CLEAN[$path]}" == "empty" ]; then
         continue
     else
-        if [ "$interactive" -eq 1 ] && [ "$list_only" -eq 0 ]; then
+        if [ "$interactive" -eq 1 ] && [ "${DEF_PATHS_TO_CLEAN[$path]}" != "delete" ]; then
             while true; do
-                read -p "Do you want to delete: $path for $(print_size_color $(get_path_size "$path"))? (y/n) " yn
+				echo -en "\t"
+                read -r -p "Delete $path for $(print_size_color "$(get_path_size "$path")")? (y/n) " yn
                 case $yn in
                     [Yy]* ) final_paths_to_clean+=("$path"); break ;;
                     [Nn]* ) DEF_PATHS_TO_CLEAN["$path"]="skip"; break;;
@@ -667,6 +671,16 @@ for path in "${!DEF_PATHS_TO_CLEAN[@]}"; do
         fi
     fi
 done
+if [ $interactive -eq 1 ]; then
+	echo -e ""
+fi
+
+# Use mapfile to correctly read paths with spaces
+mapfile -t sorted_paths_list < <(sort_paths_by_size "${final_paths_to_clean[@]}")
+
+if [[ ${#sorted_paths_list[@]} != 0 ]] && [[ -n "${sorted_paths_list[*]}" ]]; then # todo check 2nd condition
+    need_clean=1
+fi
 
 # Print heading line before printing paths in verbose and list only mode
 if [ "$verbose" -eq 1 ]; then
