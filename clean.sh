@@ -172,7 +172,7 @@ auto_update_script() {
 
 	if [ -z "$repo_dir" ]; then put_error "UPDATE" "REP_NOTFOUND"; fi
 	cd "$repo_dir" || exit
-	git fetch
+	git fetch --quiet
 
 	# Compare the local and remote hashes (check if is up-to-date)
 	local_hash=$(git rev-parse HEAD)
