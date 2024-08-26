@@ -2,21 +2,25 @@
 
 # Author: Ana Alejandra Castillejo
 # Description: Script to clean cache and temporary files for 42 students with Linux/Ubuntu
-# Last Update: 26/06/2024
+# Last Update: 26/08/2024
 
 # List of default paths to clean along with their process name 
 declare -A DEF_PATHS_TO_CLEAN=(
     ["$HOME/.cache"]="none"
     ["$HOME/.var/app/com.google.Chrome/cache/"]="chrome"
     ["$HOME/.config/Code/Cache"]="code"
-    ["$HOME/.config/Code/Shared Dictionary/cache"]="code"
     ["$HOME/.config/Code/WebStorage/5/CacheStorage"]="code"
     ["$HOME/.config/Code/CachedData"]="code"
     ["$HOME/.config/GitKraken/Cache"]="gitkraken"
-    ["$HOME/.config/GitKraken/Shared Dictionary/cache"]="gitkraken"
-    ["$HOME/.config/google-chrome/Default/Shared Dictionary/cache"]="chrome"
     ["$HOME/snap/slack/common/.cache"]="slack"
     ["$HOME/snap/slack/149/.config/Slack/Cache"]="slack"
+    ["$HOME/snap/slack/153/.config/Slack/Cache"]="slack"
+    ["$HOME/snap/slack/155/.config/Slack/Cache"]="slack"
+    ["$HOME/snap/slack/158/.config/Slack/Cache"]="slack"
+    ["$HOME/snap/slack/149/.config/Slack/Service\ Worker/CacheStorage"]="slack"
+    ["$HOME/snap/slack/155/.config/Slack/Service\ Worker/CacheStorage"]="slack"
+    [$HOME/snap/slack/153/.config/Slack/Service\ Worker/CacheStorage]="slack"
+    ["$HOME/snap/slack/158/.config/Slack/Service Worker/CacheStorage"]="slack"
     ["$HOME/snap/code/common/.cache"]="code"
     ["$HOME/snap/obsidian/common/.cache"]="obsidian"
     ["$HOME/snap/gitkraken/common/.cache"]="gitkraken"
