@@ -451,6 +451,18 @@ clean_paths() {
 	fi
 }
 
+put_new_default() {
+    local mode=$1
+    local opt="set"
+    if [ "$2" -eq 0 ]; then
+        opt="unset"
+    fi
+    echo -en "${ORANGE}Default mode"
+    if [[ "$mode" == *\ * ]]; then
+        echo -en "s"
+    fi
+    echo -e " $opt to:$mode"
+}
 
 # Array of options to be passed to getopt
 
@@ -468,86 +480,45 @@ eval set -- "$OPTIONS"
 # Parse command/script flags
 while true; do
     case "$1" in
-        -D)
+        -D|-U)
             if [ $# -ne 3 ]; then
-                echo -e "${RED}$1 flag must be used exclusively.${NORMAL}"
-                exit 1
+                put_error "USAGE" "EXC_FLAG" "$1"
             fi
-            DEFAULT_MODE="$2"
+
+            if [[ $1 == "-D" ]]; then
+                DEFAULT_VALUE=1
+            else
+                DEFAULT_VALUE=0
+            fi
             # Set new defaults based on the provided modes
-            if [[ "$DEFAULT_MODE" == *v* ]]; then
-                DEFAULT_VERBOSE=1
-                echo -e "${YELLOW}Setting default mode to verbose ${NORMAL}"
-            fi
-            if [[ "$DEFAULT_MODE" == *n* ]]; then
-                DEFAULT_DRY_RUN=1
-                echo -e "${YELLOW}Setting default mode to dry-run ${NORMAL}"
-            fi
-            if [[ "$DEFAULT_MODE" == *i* ]]; then
-                DEFAULT_INTERACTIVE=1
-                echo -e "${YELLOW}Setting default mode to interactive ${NORMAL}"
-            fi
-            if [[ "$DEFAULT_MODE" == *f* ]]; then
-                DEFAULT_FORCE=1
-                echo -e "${YELLOW}Setting default mode to force ${NORMAL}"
-            fi
-            if [[ "$DEFAULT_MODE" == *l* ]]; then
-                DEFAULT_LIST_ONLY=1
-                echo -e "${YELLOW}Setting default mode to list only ${NORMAL}"
-            fi
-            # Update the configuration file
+            message=${NC};
+            if [[ "$2" == *s* ]]; then DEFAULT_SAFE=$DEFAULT_VALUE; message+="\n - Safe"; fi
+            if [[ "$2" == *v* ]]; then DEFAULT_VERBOSE=$DEFAULT_VALUE; message+="\n - Verbose"; fi
+            if [[ "$2" == *n* ]]; then DEFAULT_DRY_RUN=$DEFAULT_VALUE; message+="\n - Dry-run"; fi
+            if [[ "$2" == *i* ]]; then DEFAULT_INTERACTIVE=$DEFAULT_VALUE; message+="\n - Interactive"; fi
+            if [[ "$2" == *f* ]]; then DEFAULT_FORCE=$DEFAULT_VALUE; message+="\n - Force"; fi
+            if [[ "$2" == *l* ]]; then DEFAULT_LIST_ONLY=$DEFAULT_VALUE; message+="\n - List-only"; fi
+
+            if [[ $message != "${NC}" ]]; then put_new_default "$message" $DEFAULT_VALUE;
+            else echo -e "${WARNING}INFO:${NC} No valid modes provided, no changes made"; fi
+
             update_config_file
-            # Exit after setting the new defaults
-            exit 0
-            ;;
-        -U)
-            if [ $# -ne 3 ]; then
-                echo -e "${RED}$1 flag must be used exclusively.${NORMAL}"
-                exit 1
-            fi
-            DEFAULT_MODE="$2"
-            # Unset defaults based on the provided modes
-            if [[ "$DEFAULT_MODE" == *v* ]]; then
-                DEFAULT_VERBOSE=0
-                echo -e "${YELLOW}Unsetting default verbose mode${NORMAL}"
-            fi
-            if [[ "$DEFAULT_MODE" == *n* ]]; then
-                DEFAULT_DRY_RUN=0
-                echo -e "${YELLOW}Unsetting default dry-run mode${NORMAL}"
-            fi
-            if [[ "$DEFAULT_MODE" == *i* ]]; then
-                DEFAULT_INTERACTIVE=0
-                echo -e "${YELLOW}Unsetting default interactive mode${NORMAL}"
-            fi
-            if [[ "$DEFAULT_MODE" == *f* ]]; then
-                DEFAULT_FORCE=0
-                echo -e "${YELLOW}Unsetting default force mode${NORMAL}"
-            fi
-            if [[ "$DEFAULT_MODE" == *l* ]]; then
-                DEFAULT_LIST_ONLY=0
-                echo -e "${YELLOW}Unsetting default list only mode${NORMAL}"
-            fi
-            # Update the configuration file
-            update_config_file
-            # Exit after unsetting the new defaults
             exit 0
             ;;
         -R)
             if [ $# -ne 2 ]; then
-                echo -e "${RED}$1 flag must be used exclusively.${NORMAL}"
-                exit 1
+                put_error "USAGE" "EXC_FLAG" "$1"
             fi
-            echo -e "${YELLOW}Resetting default modes to original values${NORMAL}"
-            # Reset defaults to original values
+            echo -e "${ORANGE}Resetting default modes to original values${NC}"
+            DEFAULT_SAFE=1
             DEFAULT_VERBOSE=0
             DEFAULT_DRY_RUN=0
             DEFAULT_INTERACTIVE=0
             DEFAULT_FORCE=0
             DEFAULT_LIST_ONLY=0
-            colors=true
-            # Update the configuration file
+            DEFAULT_COLORS=true
+
             update_config_file
-            # Exit after resetting the defaults
             exit 0
             ;;
         --color)
