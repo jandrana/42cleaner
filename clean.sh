@@ -81,12 +81,15 @@ fi
 
 # Update file with default configuration variables values
 update_config_file() {
-    echo "DEFAULT_VERBOSE=$DEFAULT_VERBOSE" > "$CONFIG_FILE"
-    echo "DEFAULT_DRY_RUN=$DEFAULT_DRY_RUN" >> "$CONFIG_FILE"
-    echo "DEFAULT_INTERACTIVE=$DEFAULT_INTERACTIVE" >> "$CONFIG_FILE"
-    echo "DEFAULT_FORCE=$DEFAULT_FORCE" >> "$CONFIG_FILE"
-    echo "DEFAULT_LIST_ONLY=$DEFAULT_LIST_ONLY" >> "$CONFIG_FILE"
-    echo "DEFAULT_COLORS=$colors" >> "$CONFIG_FILE"
+	local append_conf
+	local var_name
+
+    echo "DEFAULT_SAFE=$DEFAULT_SAFE" > "$CONFIG_FILE"
+    append_conf=("VERBOSE" "DRY_RUN" "INTERACTIVE" "FORCE" "LIST_ONLY" "COLORS")
+    for var in "${append_conf[@]}"; do
+        var_name="DEFAULT_$var"
+        echo "$var_name=${!var_name}" >> "$CONFIG_FILE"
+    done
 }
 
 # Load defaults from configuration file if it exists or create it with default values
