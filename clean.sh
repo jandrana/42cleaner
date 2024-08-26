@@ -163,6 +163,31 @@ update_script() {
 	fi
 }
 
+auto_update_script() {
+	local repo_dir
+	local local_hash
+	local remote_hash
+
+	repo_dir=$(find "$HOME" -type d -name '42cleaner' -print -quit)
+
+	if [ -z "$repo_dir" ]; then put_error "UPDATE" "REP_NOTFOUND"; fi
+	cd "$repo_dir" || exit
+	git fetch
+
+	# Compare the local and remote hashes (check if is up-to-date)
+	local_hash=$(git rev-parse HEAD)
+	remote_hash=$(git rev-parse @{u})
+	if [ "$local_hash" != "$remote_hash" ]; then
+		echo -e "A new version of the script has been found"
+		read -r -p "Do you want to update the script? $proc_msg (y/n) " yn
+			case $yn in
+				[Yy]* ) update_script; exit 0;;
+			esac
+	fi
+}
+
+auto_update_script
+
 # Update color variables value depending on user configuration
 update_color_variables() {
 	if [ "$colors" == "true" ] || [ "$colors" == "1" ] && [[ -t 1 ]] && [ -f "$COLOR_FILE" ]; then
@@ -199,7 +224,7 @@ print_help() {
 	echo -e "\t-h, --help"
 	echo -e "\t\tDisplay this help message."
 	echo -e "\t-u, --update"
-	echo -e "\t\tUpdate the script from the repository."
+	echo -e "\t\tForces script update from the repository."
 	echo -e "\t-v, --verbose"
 	echo -e "\t\tVerbose mode."
 	echo -e "\t\tShow files deleted/to delete and their sizes."
@@ -369,7 +394,7 @@ get_process_decision() {
 			print_paths_sorted "\t" "${paths[@]}"
 			proc_msg="(${BOLD}TOTAL${NC}=$(print_size_color "$process_size"))"
 			while true; do
-				read -r -p "	 Do you want to delete paths related to ${BOLD}$process${NC}? $proc_msg (y/n) " yn
+				read -r -p "	Do you want to delete paths related to ${BOLD}$process${NC}? $proc_msg (y/n) " yn
 				case $yn in
 					[Yy]* ) process_decision["$process"]="yes"; break ;;
 					[Nn]* ) process_decision["$process"]="no"; break ;;
