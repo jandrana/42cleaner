@@ -249,18 +249,18 @@ print_help() {
         echo -e "\tLocally: $repo_path/docs/"
     fi
     echo -e "\tOnline: https://github.com/jandrana/42cleaner/blob/main/docs"
-    echo -e "${BOLD}SEE ALSO${NORMAL}"
+    echo -e "${BOLD}SEE ALSO${NC}"
     echo -e "\tThe /utils folder contains auxiliary files with additional functionalities."
     echo -e "\tFiles: \`clean.conf\`, \`process_name.sh\` and \`find_cache.sh\`"
     echo -e "\tFor more details, refer to their specific documentation at /docs"
     
     
-    echo -e "${BOLD}AUTHOR${NORMAL}"
+    echo -e "${BOLD}AUTHOR${NC}"
     echo -e "\tDeveloped by: Jandrana"
     echo -e "\t      GitHub: https://github.com/jandrana"
     echo -e "\t     42 user: ana-cast"
     
-    echo -e "${BOLD}COPYRIGHT${NORMAL}"
+    echo -e "${BOLD}COPYRIGHT${NC}"
     echo -e "\tThis project is licensed under the MIT License."
 }
 
