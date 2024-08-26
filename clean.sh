@@ -40,7 +40,7 @@ total_skipped=0
 process_size=0
 
 # Flags/mode variables
-safe_mode=0
+safe_mode=1
 verbose=0
 dry_run=0
 interactive=0
@@ -64,9 +64,9 @@ DEFAULT_COLORS=true
 
 if [ -f "$COLOR_FILE" ]; then
 	source "colors.bash"
-else
-    echo -e "ERROR: Could not find $COLOR_FILE file"
-    exit 1
+# else
+#     echo -e "ERROR: Could not find $COLOR_FILE file"
+#     exit 1
 fi
 
 # shellcheck source="$HOME/.42cleaner/clean.conf"
@@ -165,7 +165,7 @@ update_script() {
 
 # Update color variables value depending on user configuration
 update_color_variables() {
-	if [ "$colors" == "true" ] || [ "$colors" == "1" ] && [[ -t 1 ]]; then
+	if [ "$colors" == "true" ] || [ "$colors" == "1" ] && [[ -t 1 ]] && [ -f "$COLOR_FILE" ]; then
 		activate_color
 	else
 		colors=false
