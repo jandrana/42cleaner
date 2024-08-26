@@ -527,18 +527,18 @@ while true; do
                 true|1|false|0)
                     colors=$1
                     update_color_variables
-                    echo -e "Setting color output to ${GREEN}$1${NORMAL}"
+                    echo -e "Setting color output to ${GREEN}$1${NC}"
                     shift
                     ;;
                 *)
-                    echo -e "${RED}Invalid value for --color. Valid values are true, 1, false, 0.${NORMAL}"
+                    echo -e "${RED}Invalid value for --color. Expected: true, 1, false, 0.${NC}"
                     exit 1
                     ;;
             esac
             ;;
         --set-default-color)
             if [ $# -ne 3 ]; then
-                echo -e "${RED}$1 flag must be used exclusively.${NORMAL}"
+                echo -e "${RED}$1 flag must be used exclusively.${NC}"
                 exit 1
             fi
             shift
@@ -547,11 +547,11 @@ while true; do
                     colors=$1
                     update_color_variables
                     update_config_file
-                    echo -e "Setting default color output to ${GREEN}$1${NORMAL}"
+                    echo -e "Setting default color output to ${GREEN}$1${NC}"
                     shift
                     ;;
                 *)
-                    echo -e "${RED}Invalid value for --set-default-color. Valid values are true, 1, false, 0.${NORMAL}"
+                    echo -e "${RED}Invalid value for --set-default-color. Valid values are true, 1, false, 0.${NC}"
                     exit 1
                     ;;
             esac
@@ -567,38 +567,28 @@ while true; do
             exit 0
             ;;
         -v|--verbose)
-            echo -e "Verbose mode enabled"
             verbose=1
             shift
             ;;
         -n|--dry-run)
-            echo -e "Dry run mode enabled"
-            echo -e "Verbose mode enabled"
-            echo -e "\n\t\t${RED}${BOLD}WARNING:${NORMAL} THIS IS A SIMULATION MODE"
-            echo -e "\t\t\tNO FILES WILL BE DELETED"
             dry_run=1
-            verbose=1
             shift
             ;;
         -i|--interactive)
-            echo -e "Interactive mode enabled"
             interactive=1
             verbose=1
             shift
             ;;
         -l|--list)
-            echo -e "List only mode enabled"
             list_only=1
             dry_run=1
             shift
             ;;
         -f|--force)
-            echo -e "Force mode enabled"
             force=1
             shift
             ;;
         -s|--safe)
-            echo -e "Safe mode enabled"
             safe_mode=1
             shift
             ;;
@@ -607,8 +597,8 @@ while true; do
             break
             ;;
         \?)
-            echo -e "${RED}Invalid option: -$OPTARG${NORMAL}"
-            print_help
+            echo -e "${ERROR}USAGE ERROR${NC}: invalid option -- $OPTARG"
+            echo -e "Try '$(basename "$0") --help' for more information." 1>&2
             exit 1
             ;;
     esac
