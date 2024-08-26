@@ -616,8 +616,8 @@ check_valid_paths() {
         done
     fi
     if [[ $empty -eq 1 ]]; then
-        echo -e "${WARNING}WARNING:${NC} No paths found in DEF_PATHS_TO_CLEAN array"
-        echo -e "\t Please fill it with valid paths before trying again"
+        echo -e "${NOTE}NOTE:${NC} No paths found for cleaning"
+		echo -e "Total available space: ${BOLD}$(get_storage_usage)${NC}"
         exit 1
     fi
 }
