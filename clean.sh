@@ -68,7 +68,7 @@ DEFAULT_COLORS=true
 if [ -f "$COLOR_FILE" ]; then
 	source "$COLOR_FILE"
 else
-    echo -e "WARNING: Could not find $COLOR_FILE file.\nIf you want to improve output readability, update the script"
+    echo -e "WARNING: Could not find $COLOR_FILE file.\nIf you want to improve output readability, update the script using --update"
     read -r -p "Press enter to continue " yn
 fi
 
