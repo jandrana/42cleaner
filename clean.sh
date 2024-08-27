@@ -2,7 +2,7 @@
 
 # Author: Ana Alejandra Castillejo
 # Description: Script to clean cache and temporary files for 42 students with Linux/Ubuntu
-# Last Update: 26/08/2024
+# Last Update: 27/08/2024
 
 # List of default paths to clean along with their process name 
 declare -A DEF_PATHS_TO_CLEAN=(
@@ -170,7 +170,7 @@ update_script() {
 			esac
         fi
         if [ $update == 1 ]; then
-            git pull origin main --quiet
+            git pull origin main --quiet || exit
             if [ ! -d "$CLEAN_DIR" ]; then
                 mkdir -p "$CLEAN_DIR"
                 cp utils/clean.conf "$CLEAN_DIR"
