@@ -183,29 +183,6 @@ update_script() {
     fi
 }
 
-auto_update_script() {
-	local repo_dir
-	local local_hash
-	local remote_hash
-
-	repo_dir=$(find "$HOME" -type f -ipath '*/42cleaner/clean.sh*' | sort -n | head -n 1)
-
-	if [ -z "$repo_dir" ]; then put_error "UPDATE" "REP_NOTFOUND"; fi
-	cd "$repo_dir" || exit
-	git fetch --quiet
-
-	# Compare the local and remote hashes (check if is up-to-date)
-	local_hash=$(git rev-parse HEAD)
-	remote_hash=$(git rev-parse @{u})
-	#if [ "$local_hash" != "$remote_hash" ]; then
-		echo -e "A new version of the script has been found"
-		read -r -p "Do you want to update the script? $proc_msg (y/n) " yn
-			case $yn in
-				[Yy]* ) update_script "auto" ; exit 0;;
-			esac
-	#fi
-}
-
 # Update color variables value depending on user configuration
 update_color_variables() {
 	if [ "$colors" == "true" ] || [ "$colors" == "1" ] && [[ -t 1 ]] && [ -f "$COLOR_FILE" ]; then
