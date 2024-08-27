@@ -36,11 +36,14 @@ mkdir -p "$INSTALL_DIR"
 cp clean.sh "$INSTALL_DIR/clean.sh"
 
 # Copy the auxiliary scripts (if they exist) to the install directory
-if [ ! -f "utils/process_name.sh" ]; then
+if [ -f "utils/process_name.sh" ]; then
 	cp utils/process_name.sh "$INSTALL_DIR/process_name.sh"
 fi
-if [ ! -f "utils/find_cache.sh" ]; then
+if [ -f "utils/find_cache.sh" ]; then
 	cp utils/find_cache.sh "$INSTALL_DIR/find_cache.sh"
+fi
+if [ -f "utils/colors.bash" ]; then
+	cp utils/colors.bash "$INSTALL_DIR/colors.bash"
 fi
 
 # Copy the configuration file (if it exists) to the install directory
